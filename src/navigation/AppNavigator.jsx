@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useAuth } from '../context/AuthContext';
-import MainTabs from './MainTabs';
+import { useSelector } from 'react-redux';
 
 // Auth Screens
 import OnboardingScreen from '../screens/auth/OnboardingScreen';
@@ -9,12 +8,14 @@ import AuthScreen from '../screens/auth/AuthScreen';
 import OtpScreen from '../screens/auth/OtpScreen';
 
 // Main Screens
-import HomeScreen from '../screens/main/HomeScreen';
+import MainTabs from './MainTabs';
 import LocationScreen from '../screens/main/LocationScreen';
 import ConfirmLocationScreen from '../screens/main/ConfirmLocationScreen';
 import ProviderDetailScreen from '../screens/main/ProviderDetailScreen';
 import MenuSubscriptionScreen from '../screens/main/MenuSubscriptionScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
+import FavoriteAllScreen from '../screens/main/FavoriteAllScreen';
+
 
 // Order Screens
 import CartScreen from '../screens/orders/CartScreen';
@@ -30,7 +31,8 @@ import RatingsReviewsScreen from '../screens/orders/RatingsReviewsScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSelector(state =>
+    state.auth);
 
   return (
     <Stack.Navigator 
@@ -44,6 +46,7 @@ const AppNavigator = () => {
       
       {/* Main Stack */}
       <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="FavoriteAllScreen" component={FavoriteAllScreen} />
       <Stack.Screen name="LocationScreen" component={LocationScreen} />
       <Stack.Screen name="ConfirmLocation" component={ConfirmLocationScreen} />
       <Stack.Screen name="ProviderDetail" component={ProviderDetailScreen} />
@@ -51,9 +54,9 @@ const AppNavigator = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       
       {/* Order Stack */}
-      <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="Plan" component={TrackPlanScreen} />
       <Stack.Screen name="LiveTracking" component={LiveTrackingScreen} />
-      <Stack.Screen name="TrackPlan" component={TrackPlanScreen} />
+      <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="OrderManagement" component={OrderManagementScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />

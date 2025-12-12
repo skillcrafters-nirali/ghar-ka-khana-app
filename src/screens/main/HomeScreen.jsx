@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,8 +13,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import { platformStyles } from '../../styles/platform';
-
-const tiffinProviders = [
+import { setGlobalLikedItems } from '../../utils/likedItems';
+import { useGetStatesQuery } from '../../services/api';
+export const tiffinProviders = [
   {
     id: 1,
     name: 'Harshiksha Dabbawala',
@@ -46,6 +47,13 @@ const tiffinProviders = [
 
 const HomeScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
+  const [liked, setLiked] = useState({});
+  const { data: states } = useGetStatesQuery();
+
+  // Add this useEffect after line 44
+  useEffect(() => {
+    console.log('States API Response in HomeScreen:', states);
+  }, [states]);
 
   const filteredProviders = tiffinProviders.filter(provider => {
     const matchesSearch = provider.name
@@ -62,15 +70,28 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-   const renderProvider = ({ item }) => (
+  const toggleLike = id => {
+    const newLiked = { ...liked, [id]: !liked[id] };
+    setLiked(newLiked);
+    setGlobalLikedItems(newLiked);
+  };
+
+  const renderProvider = ({ item }) => (
     <TouchableOpacity
       style={styles.providerCard}
       onPress={() => handleProviderPress(item)}
     >
       <View style={styles.imageContainer}>
         <Image source={{ uri: item.image }} style={styles.foodImage} />
-        <TouchableOpacity style={styles.heartIcon}>
-          <Icon name="heart-outline" size={20} color={colors.surface} />
+        <TouchableOpacity
+          style={styles.heartIcon}
+          onPress={() => toggleLike(item.id)}
+        >
+          <Icon
+            name={liked[item.id] ? 'heart' : 'heart-outline'}
+            size={20}
+            color={liked[item.id] ? colors.surface : colors.surface}
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.cardContent}>
@@ -88,7 +109,6 @@ const HomeScreen = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   );
-  
 
   return (
     <View style={styles.container}>
@@ -117,14 +137,16 @@ const HomeScreen = ({ navigation }) => {
                   style={styles.locationContainer}
                   onPress={() => navigation.navigate('LocationScreen')}
                 >
-                  <Text style={styles.locationText}>Baner, Pune</Text>
+                  <Text style={styles.locationText}>
+                    {states?.data?.[0]?.stateName || 'Baner,Pune'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
 
           <View style={styles.rightIcons}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.calendarIcon}
               onPress={() => navigation.navigate('TrackPlan')}
             >
@@ -135,7 +157,7 @@ const HomeScreen = ({ navigation }) => {
                   color={colors.primary}
                 />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity style={styles.notificationIcon}>
               <View style={styles.notificationIconContainer}>
@@ -241,15 +263,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  calendarIcon: {
-    padding: 4,
-    marginRight: 8,
-  },
-  calendarIconContainer: {
-    backgroundColor: colors.successLight,
-    borderRadius: 20,
-    padding: 8,
-  },
+  // calendarIcon: {
+  //   padding: 4,
+  //   marginRight: 8,
+  // },
+  // calendarIconContainer: {
+  //   backgroundColor: colors.successLight,
+  //   borderRadius: 20,
+  //   padding: 8,
+  // },
 
   notificationIcon: {
     padding: 4,
@@ -295,7 +317,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 100,
   },
-  
 
   providerCard: {
     backgroundColor: colors.surface,
@@ -311,11 +332,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 20,
+    // backgroundColor: 'rgba(0,0,0,0.3)',
+    // borderRadius: 20,
     padding: 8,
   },
-  
+
   foodImage: {
     width: '100%',
     height: 150,

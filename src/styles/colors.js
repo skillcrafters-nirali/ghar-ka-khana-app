@@ -5,6 +5,12 @@ export const colors = {
   tertiary: '#C8F7DC',     // Light green background
   bottomprimary:'#2c6946', //bottom nav green background
 
+    // Gradient Colors 
+    gradientDark: '#006F3C',   // Deep top green
+    gradientMid: '#009A57',    // Mid green
+    gradientLight: '#C6F9D8',  // Light mint bottom
+  
+
   // Neutral Colors
   background: '#F4F4F4',   // Light white background
   surface: '#FFFFFF',      // Pure white surface
@@ -12,7 +18,7 @@ export const colors = {
   // Text Colors
   textPrimary: '#2E2E2E',  // Light black text
   textSecondary: '#8D8D8D', // Light gray text
-
+  bgLight:'#d9d9d9',//Light Gray Background
   // Semantic Colors
   successbg:'#7aab5f',    //Light green button 
   successLight: '#d4eedf', // Light green background

@@ -1,4 +1,7 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useLoginMutation } from '../../services/api';
+// import { setCredentials } from '../../store/authSlice';
 import {
   View,
   Text,
@@ -6,27 +9,55 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Image,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from '../../components/common/Button';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const AuthScreen = ({ navigation }) => {
-  const { control, handleSubmit, formState: { errors, isValid }, watch } = useForm({
+  const dispatch = useDispatch();
+  const [login, { isLoading }] = useLoginMutation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm({
     mode: 'onChange',
     defaultValues: {
-      phoneNumber: ''
-    }
+      phoneNumber: '',
+    },
   });
 
   const phoneNumber = watch('phoneNumber');
 
-  const onSubmit = (data) => {
-    navigation.navigate('Otp', { phoneNumber: '+91' + data.phoneNumber });
+  const onSubmit = async data => {
+    try {
+      const result = await login({
+        phone: data.phoneNumber,
+      }).unwrap();
+      console.log('Login Success:', result);
+      // dispatch(
+      //   setCredentials({
+      //     token: result.token,
+      //     user: result.user,
+      //   }),
+      // );
+
+      if (result.status) {
+        navigation.navigate('Otp', {
+          phoneNumber:data.phoneNumber,
+          otp: result.data?.otp,
+        });
+      }
+    } catch (error) {
+      console.log('API Error:', error);
+    }
   };
+
+  
 
   return (
     <View style={styles.container}>
@@ -50,16 +81,19 @@ const AuthScreen = ({ navigation }) => {
               required: 'Phone number is required',
               pattern: {
                 value: /^[6-9]\d{9}$/,
-                message: 'Enter valid 10-digit mobile number'
+                message: 'Enter valid 10-digit mobile number',
               },
               minLength: {
                 value: 10,
-                message: 'Phone number must be 10 digits'
-              }
+                message: 'Phone number must be 10 digits',
+              },
             }}
             render={({ field: { onChange, value } }) => (
               <TextInput
-                style={[styles.phoneInput, errors.phoneNumber && styles.inputError]}
+                style={[
+                  styles.phoneInput,
+                  errors.phoneNumber && styles.inputError,
+                ]}
                 placeholder="Mobile Number"
                 placeholderTextColor={colors.textSecondary}
                 value={value}
@@ -70,36 +104,46 @@ const AuthScreen = ({ navigation }) => {
             )}
           />
         </View>
-        
+
         {errors.phoneNumber && (
           <Text style={styles.errorText}>{errors.phoneNumber.message}</Text>
         )}
 
         <Button
-          title="Send OTP"
+          title={isLoading ? 'Sending...' : 'Send OTP'}
           onPress={handleSubmit(onSubmit)}
-          size= "large"
+          disabled={isLoading}
+          size="large"
           style={styles.sendButton}
         />
-
-        <View style={styles.socialContainer}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text>
-              <AntDesign name="google" color="#000" size={22} />
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text>
-              <FontAwesome name="whatsapp" color="#000" size={22} />
-            </Text>
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.orContainer}>
           <View style={styles.orLine} />
           <Text style={styles.orText}>or</Text>
           <View style={styles.orLine} />
         </View>
+
+        <View style={styles.socialContainer}>
+          <TouchableOpacity style={styles.socialButton}>
+            <Image
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/512/281/281764.png',
+              }}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.socialButton}>
+            <Image
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/512/4423/4423697.png',
+              }}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.termsText}>
           Read Out <Text style={styles.boldText}>Privacy Policy</Text> and{' '}
           <Text style={styles.boldText}>Refund Policy</Text> Managed by company
@@ -116,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   topSection: {
-    flex: 0.7,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -175,10 +219,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   socialButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },

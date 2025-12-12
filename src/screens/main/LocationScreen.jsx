@@ -1,46 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
-const savedAddresses = [
-  {
-    id: 1,
-    type: 'Work',
-    name: '1234, Green Valley Apartments',
-    address: 'Near Baner Main Road',
-    area: 'Baner, Pune - 411045',
-    isSelected: true
-  },
-  {
-    id: 2,
-    type: 'Work',
-    name: '1234, Green Valley Apartments',
-    address: 'Near Baner Main Road',
-    area: 'Baner, Pune - 411045',
-    isSelected: false
-  },
-  {
-    id: 3,
-    type: 'Home',
-    name: '1234, Green Valley Apartments',
-    address: 'Near Baner Main Road',
-    area: 'Baner, Pune - 411045',
-    isSelected: false
-  },
-  {
-    id: 4,
-    type: 'Work',
-    name: '1234, Green Valley Apartments',
-    address: 'Near Baner Main Road',
-    area: 'Baner, Pune - 411045',
-    isSelected: false
-  }
-];
+import { useGetCitiesQuery,useGetStatesQuery } from '../../services/api';
+import { useSelector } from 'react-redux';
+// const savedAddresses = [
+//   {
+//     id: 1,
+//     type: 'Work',
+//     name: '1234, Green Valley Apartments',
+//     address: 'Near Baner Main Road',
+//     area: 'Baner, Pune - 411045',
+//     isSelected: true
+//   },
+//   {
+//     id: 2,
+//     type: 'Work',
+//     name: '1234, Green Valley Apartments',
+//     address: 'Near Baner Main Road',
+//     area: 'Nikol, Ahmedabad - 382330',
+//     isSelected: false
+//   },
+//   {
+//     id: 3,
+//     type: 'Home',
+//     name: '1234, Green Valley Apartments',
+//     address: 'Near Baner Main Road',
+//     area: 'Gandhinagar, Ahmedabad - 380010',
+//     isSelected: false
+//   },
+//   {
+//     id: 4,
+//     type: 'Work',
+//     name: '1234, Green Valley Apartments',
+//     address: 'Near Baner Main Road',
+//     area: 'Thaltej, Ahmedabad - 382310',
+//     isSelected: false
+//   }
+// ];
 
-const LocationScreen = ({ navigation }) => {
+const LocationScreen = ({ navigation,route}) => {
+  const user = useSelector(state => state.auth.user);
   const [searchText, setSearchText] = useState('');
-  const [addresses, setAddresses] = useState(savedAddresses);
+  const [addresses, setAddresses] = useState([]);
+
+  const { data: cities, isLoading: citiesLoading } = useGetCitiesQuery();
+  
+  const { data: states, isLoading: statesLoading } = useGetStatesQuery();
+
+  useEffect(() => {
+    if (route.params?.newAddress) {
+      setAddresses(prev => [...prev, route.params.newAddress]);
+    }
+  }, [route.params?.newAddress]);
+
+  // Convert API data to display format
+  useEffect(() => {
+    if (cities?.data) {
+      const formattedAddresses = cities.data.map((city, index) => ({
+        id: index + 1,
+        type: 'City',
+        name: city.cityName,
+        address: city.cityName,
+        area: `${city.cityName}, ${city.stateName || 'India'}`,
+        isSelected: false
+      }));
+      setAddresses(formattedAddresses);
+    }
+  }, [cities]);
+
+
+
+useEffect(() => {
+  console.log('Cities API Response:', cities);
+}, [cities]);
+
+useEffect(() => {
+  console.log('States API Response:', states);
+}, [states]);
+
 
   const handleAddressSelect = (selectedId) => {
     const updatedAddresses = addresses.map(addr => ({
@@ -49,6 +88,14 @@ const LocationScreen = ({ navigation }) => {
     }));
     setAddresses(updatedAddresses);
   };
+
+  
+// useEffect(() => {
+//   if (route.params?.newAddress) {
+//     setAddresses(prev => [...prev, route.params.newAddress]);
+//   }
+// }, [route.params?.newAddress]);
+
 
   const getIconName = (type) => {
     switch (type) {
@@ -85,7 +132,14 @@ const LocationScreen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  return (
+  const filteredAddresses = addresses.filter(address => 
+  address.type.toLowerCase().includes(searchText.toLowerCase()) ||
+  address.name.toLowerCase().includes(searchText.toLowerCase()) ||
+  address.address.toLowerCase().includes(searchText.toLowerCase()) ||
+  address.area.toLowerCase().includes(searchText.toLowerCase())
+);
+
+return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       
@@ -125,23 +179,25 @@ const LocationScreen = ({ navigation }) => {
         </View>
         <View style={styles.currentLocationText}>
           <Text style={styles.currentLocationTitle}>Use your current location</Text>
-          <Text style={styles.currentLocationSubtitle}>Baner, Pune</Text>
+          {/* <Text style={styles.currentLocationSubtitle}>Baner, Pune</Text> */}
         </View>
       </TouchableOpacity>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recent</Text>
+        <Text style={styles.sectionTitle}>Available Cities</Text>
       </View>
-
-      <FlatList
-        data={addresses}
+{citiesLoading ? (
+  <Text style ={styles.loadingText}>Loading cities...</Text>
+) :(
+<FlatList
+        data={filteredAddresses}
         renderItem={renderAddress}
         keyExtractor={(item) => item.id.toString()}
         style={styles.list}
         showsVerticalScrollIndicator={false}
       />
-
-      <View style={styles.sectionHeader}>
+)}
+       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Saved</Text>
       </View>
     </View>
@@ -293,6 +349,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family.regular,
     color: colors.textSecondary,
     marginBottom: 2
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: fonts.size.md,
+    color: colors.textSecondary,
+    marginTop: 20,
   },
   addressArea: {
     fontSize: fonts.size.sm,

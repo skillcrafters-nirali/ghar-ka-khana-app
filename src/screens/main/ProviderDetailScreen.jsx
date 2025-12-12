@@ -16,6 +16,7 @@ import Button from '../../components/common/Button';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
+
 const subscriptionPlans = [
   {
     id: 1,
@@ -203,7 +204,9 @@ const ProviderDetailScreen = ({ route, navigation }) => {
 
         {/* Book Demo Meal Button */}
         <View style={styles.demoButtonContainer}>
-          <Button title="Book Your Demo Meal" variant="primary" size="large" />
+          <Button title="Book Your Demo Meal" variant="primary" size="large" 
+          onPress={() => navigation.navigate('Cart')}
+          />
         </View>
       </ScrollView>
     </View>

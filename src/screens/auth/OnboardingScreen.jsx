@@ -18,7 +18,6 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-
 const onboardingData = [
   {
     id: 1,
@@ -33,7 +32,6 @@ const onboardingData = [
     subtitle:
       'Save time with Annapurna! Easily find dabba at your area and get them delivered right to your doorstep.',
     img: 'https://cdn-icons-png.flaticon.com/512/5210/5210711.png',
-    
   },
   {
     id: 3,
@@ -90,18 +88,21 @@ const OnboardingScreen = ({ navigation }) => {
   };
 
   const renderSplashScreen = () => (
+    
     <LinearGradient
-      colors={[colors.primary, colors.secondary]}
+      colors={[colors.gradientDark, colors.gradientMid, colors.gradientLight]}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
       style={styles.splashContainer}
     >
-      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+      
       <View style={styles.splashContent}>
         <Text style={styles.wheatIcon}>🌾</Text>
         <Text style={styles.splashTitle}>GHAR KA KHANA</Text>
       </View>
     </LinearGradient>
   );
-  
+
   const renderOnboardingScreen = (screen, index) => {
     const isSecondScreen = index === 1;
     const topSectionStyle = isSecondScreen
@@ -116,8 +117,6 @@ const OnboardingScreen = ({ navigation }) => {
 
     return (
       <View style={styles.onboardingContainer}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-
         <View style={topSectionStyle}>
           <View style={styles.imageContainer}>
             <Image
@@ -139,10 +138,9 @@ const OnboardingScreen = ({ navigation }) => {
                   <Text style={styles.featuresTitle}>Features:</Text>
                   {screen.features.map((feature, idx) => (
                     // <Text key={idx} style={styles.featureText}>
-                       <Text key={`feature-${idx}`} style={styles.featureText}>
+                    <Text key={`feature-${idx}`} style={styles.featureText}>
                       {feature}
-                  </Text>
-                    
+                    </Text>
                   ))}
                 </View>
               )}
@@ -160,8 +158,7 @@ const OnboardingScreen = ({ navigation }) => {
                   title="Get Started!"
                   onPress={handleGetStarted}
                   variant="primary"
-                  size='large'
-                  
+                  size="large"
                 />
               ) : (
                 <>
@@ -179,7 +176,6 @@ const OnboardingScreen = ({ navigation }) => {
                     onPress={handleNext}
                     variant="primary"
                     size="medium"
-                    
                   />
                 </>
               )}
@@ -192,6 +188,19 @@ const OnboardingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+   {/* <StatusBar 
+      barStyle="dark-content" 
+      backgroundColor={colors.background} 
+      hidden={currentIndex === 0}
+    /> */}
+
+<StatusBar 
+  barStyle={currentIndex === 0 ? "light-content" : "dark-content"}
+  backgroundColor={currentIndex === 0 ? 'transparent' : colors.background}
+  translucent={currentIndex === 0}
+  hidden={currentIndex === 0}
+/>
+
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -216,11 +225,12 @@ const OnboardingScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:colors.background,
+    backgroundColor: colors.primary,
   },
   screenContainer: {
     width: width,
-    height: height,
+    // height: height,
+    flex:1,
   },
   // Splash Screen Styles
   splashContainer: {
@@ -256,7 +266,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 40 : 60,
   },
   topSectionSmall: {
-    flex: 0.50,
+    flex: 0.5,
     backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
@@ -290,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-     paddingTop: 10,
+    paddingTop: 10,
   },
   imageContainer: {
     justifyContent: 'center',
@@ -305,7 +315,6 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingHorizontal: 30,
     marginBottom: 20,
-    
   },
   onboardingTitle: {
     fontSize: 28,
@@ -350,25 +359,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 20,
-   },
+  },
   skipButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
   },
-  
-  
-  
+
   skipText: {
     fontSize: 16,
     fontFamily: fonts.family.bold,
     color: colors.textPrimary,
   },
-  
-  
 });
 
 export default OnboardingScreen;
-
-
-
-

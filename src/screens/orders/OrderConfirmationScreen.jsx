@@ -49,14 +49,14 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
       <View style={styles.footer}>
         <TouchableOpacity 
           style={styles.trackButton}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('LiveTracking')}
         >
           <Text style={styles.trackButtonText}>Track Order</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={styles.homeButton}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('MainTabs')}
         >
           <Text style={styles.homeButtonText}>Back to Home</Text>
         </TouchableOpacity>

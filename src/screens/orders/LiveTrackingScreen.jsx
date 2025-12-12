@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
@@ -39,7 +39,9 @@ const LiveTrackingScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      
+      <ScrollView style={styles.scrollContainer}
+      showsVerticalScrollIndicator={false}
+      >
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -138,6 +140,7 @@ const LiveTrackingScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 };
@@ -146,8 +149,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 50
-  },
+    // paddingTop: 50,
+    paddingTop: StatusBar.currentHeight || 44,
+},
+scrollContainer:{
+ flex:1,
+},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -235,12 +242,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary
   },
   orderDetails: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 20,
-    paddingTop: 20
+    paddingTop: 20,
+    paddingBottom:40,
+    minHeight:400,
   },
   orderHeader: {
     marginBottom: 20

@@ -4,8 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from '../../components/common/Button';
+import CurvedBottomNav from '../../components/ui/CurvedBottomNav';
 
-const TrackPlanScreen = ({ navigation }) => {
+const TrackPlanScreen = ({ navigation,route }) => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const plans = [
@@ -29,6 +30,16 @@ const TrackPlanScreen = ({ navigation }) => {
     }
   ];
 
+  const mockState = {
+    index:1,
+    routes:[
+      {key:'home',name:'Home'},
+      {key:'cart',name:'Cart' },
+      {key:'favorite',name:'Favorite'},
+      {key:'profile',name:'Profile'}
+    ]
+  };
+
   const getDaysInMonth = () => {
     return Array.from({ length: 30 }, (_, i) => i + 1);
   };
@@ -46,7 +57,6 @@ const TrackPlanScreen = ({ navigation }) => {
     return 'upcoming';
   };
   
-
   const getDayStyle = (status) => {
     switch (status) {
       case 'delivered':
@@ -78,19 +88,18 @@ const TrackPlanScreen = ({ navigation }) => {
     const weekDays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
     return (
-      <View key={key} style={styles.planWrapper}>
+      <View key={key} style={{marginBottom:20}}>
                 <Text style={styles.planTitle}>Plan #{plan.id}</Text>
-
-      <View style={styles.planCard}>
-        
-        <View style={styles.calendarContainer}>
+                <View style={styles.planWrapper} >
+          <View style={styles.planCard}>
+         <View style={styles.calendarContainer}>
           <View style={styles.monthHeader}>
             <Text style={styles.monthText}>{plan.month}</Text>
           </View>
           
           <View style={styles.weekDaysRow}>
-            {weekDays.map((day, index) => (
-              <Text key={index} style={styles.weekDayText}>{day}</Text>
+            {weekDays.map((day) => (
+              <Text key={day} style={styles.weekDayText}>{day}</Text>
             ))}
           </View>
           
@@ -99,7 +108,7 @@ const TrackPlanScreen = ({ navigation }) => {
               const status = getDayStatus(day, plan);
               return (
                 <TouchableOpacity
-                  key={day}
+                  key={`${plan.id}-${day}`}
                   style={[styles.dayCell, getDayStyle(status)]}
                   onPress={() => setSelectedPlan(plan.id)}
                 >
@@ -114,7 +123,7 @@ const TrackPlanScreen = ({ navigation }) => {
         
         <Text style={styles.providerName}>{plan.name}</Text>
         
-        {plan.id === 2 && (
+        {/* {plan.id === 2 && (
           <Button
             title="Renew Plan"
             variant="primary"
@@ -122,7 +131,8 @@ const TrackPlanScreen = ({ navigation }) => {
             style={styles.renewButton}
             onPress={() => navigation.navigate('MenuSubscription')}
           />
-        )}
+        )} */}
+      </View>
       </View>
       </View>
     );
@@ -141,7 +151,7 @@ const TrackPlanScreen = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.title}>Track Your Plan</Text>
         <TouchableOpacity style={styles.helpButton}>
-          <Icon name="help-circle-outline" size={24} color={colors.textPrimary} />
+          <Icon name="information-circle-outline" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -149,44 +159,27 @@ const TrackPlanScreen = ({ navigation }) => {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {plans.map((plan) => renderCalendar(plan))}
+        {plans.map((plan) => renderCalendar(plan,plan.id))}
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Icon name="home-outline" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Cart')}
-        >
-          <View style={styles.activeNavIcon}>
-            <Icon name="bag" size={24} color={colors.surface} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('OrderHistory')}
-        >
-          <Icon name="heart-outline" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Icon name="person-outline" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.buttonContainer}>
+      <Button
+        title="Renew Plan"
+        variant="primary"
+        size='large'
+        style={styles.renewButton}
+        onPress={() => navigation.navigate('MenuSubscription')}
+      />
+    </View>
+   <CurvedBottomNav state={mockState} navigation={navigation} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   planWrapper: {
-    marginBottom: 20
+    padding:10,
+    borderRadius:18,
+    borderWidth:1,
   },
   
  container: {
@@ -217,29 +210,31 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20
   },
+  
   planCard: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 14,
+    borderWidth: 1.5,
     borderColor: colors.border,
     padding: 16,
-    elevation: 2,
     shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4
+    shadowRadius: 4,
+    
   },
   planTitle: {
     fontSize: 14,
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
-    marginBottom: 8,
-    textAlign: 'center',
-    backgroundColor: colors.surface,
+    marginBottom: 6,
+    marginLeft:6,
+    alignSelf:'flex-start',
+    backgroundColor: colors.bgLight,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     borderRadius: 6,
-    alignSelf: 'flex-start'
+    
   },
   calendarContainer: {
     marginBottom: 16
@@ -324,32 +319,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: colors.background,
+    marginBottom:80,
+  },
   renewButton: {
     marginTop: 12
   },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 8,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8
-  },
-  activeNavIcon: {
-    backgroundColor: colors.primary,
-    borderRadius: 20,
-    padding: 12
-  }
 });
 
 

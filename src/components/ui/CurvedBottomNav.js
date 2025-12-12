@@ -90,7 +90,7 @@ const TAB_WIDTH = SCREEN_WIDTH / 4;
 
 const TAB_ICONS = {
   Home: 'home-outline',
-  Cart: 'bag-outline',
+  Plan: 'bag-outline',
   Favorite: 'heart-outline',
   Profile: 'person-outline',
 };
@@ -144,14 +144,14 @@ export default function CurvedBottomNav({ state, navigation }) {
                 <View style={styles.activeCircle}>
                   <Icon
                     name={TAB_ICONS[route.name]}
-                    size={28}
+                    size={26}
                     color={colors.surface}
                   />
                 </View>
               ) : (
                 <Icon
                   name={TAB_ICONS[route.name]}
-                  size={26}
+                  size={24}
                   color={colors.surface}
                 />
               )}
