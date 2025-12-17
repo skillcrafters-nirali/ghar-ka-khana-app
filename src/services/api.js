@@ -1,31 +1,37 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logout } from '../store/authSlice';
+import { useSelector } from 'react-redux';
+const baseQuery = fetchBaseQuery({
+  baseUrl: 'http://192.168.29.169:3001/api/v1/',
+  prepareHeaders: (headers, { getState }) => {
+    // ✅ get token from redux store
+    const token = getState().auth?.token;
+
+    console.log('user token', token);
+
+    if (token) {
+      headers.set('x-auth-token', token);
+      // OR if backend expects Bearer
+      // headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    headers.set('Content-Type', 'application/json');
+    return headers;
+  },
+});
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await fetchBaseQuery({
-    baseUrl: 'http://192.168.29.169:3001/api/v1/',
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth?.token;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  })(args, api, extraOptions);
-
-  if (result.error && result.error.status === 401) {
+  const result = await baseQuery(args, api, extraOptions);
+  if (result?.error?.status === 401) {
     api.dispatch(logout());
   }
-
   return result;
 };
-
 
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User','Address'],
+  tagTypes: ['User', 'Address'],
   endpoints: builder => ({
     // Auth
     login: builder.mutation({
@@ -42,53 +48,67 @@ export const api = createApi({
         method: 'POST',
         body: credentials,
       }),
-      transformResponse: (response) => {
-        console.log('API Response:', response);
-        console.log('Token:', response.token);
-        console.log('User:', response.user);
-        console.log('Status:', response.status);
-        return response;
-      },
+      // transformResponse: response => {
+      //   console.log('API Response:', response);
+      //   console.log('Token:', response.token);
+      //   console.log('User:', response.user);
+      //   console.log('Status:', response.status);
+      //   return response;
+      // },
     }),
-     
+
     //Resend OTP
-    resendOtp:
-    builder.mutation({
+    resendOtp: builder.mutation({
       query: credentials => ({
-        url:'resendOtp',
-        method:'POST',
-        body:credentials,
+        url: 'resendOtp',
+        method: 'POST',
+        body: credentials,
       }),
     }),
-    //Address 
-    getCities:
-    builder.query({
-      query:(stateId) => `city${stateId ? `?stateId=${stateId}`:''}`,
-      
+    //city
+    // getCities: builder.query({
+    //   query: stateId => `city?stateId=${stateId}`,
+    // }),
+
+    getCities: builder.mutation({
+      query: stateId => {
+        console.log("stateId", stateId)
+        return {
+        url: 'city',
+        method: 'POST',
+        body: { stateId },
+      }}
     }),
 
-    getStates:
-    builder.query({
+    //state
+    getStates: builder.query({
       query: () => 'state',
-      
     }),
 
-    storeAddress:
-    builder.mutation({
-        query:(addressData) => ({
-          url: 'storeaddress',
-          method:'POST',
-          body:addressData,
-        }),
-        invalidatesTags:['Address'],
+    // ADDRESS
+    userAddress: builder.mutation({
+      query: addressData => ({
+        url: 'storeaddress',
+        method: 'POST',
+        body: addressData,
       }),
+      invalidatesTags: ['Address'],
     }),
-  });
 
-export const { 
-  useLoginMutation, 
+    getUserAddresses: builder.query({
+      query: () => 'useraddresses',
+      providesTags: ['Address'],
+    }),
+  }),
+});
+
+export const {
+  useLoginMutation,
   useVerifyOtpMutation,
   useResendOtpMutation,
-  useGetCitiesQuery,
+  // useGetCitiesQuery,
+  useGetCitiesMutation,
   useGetStatesQuery,
-  useStoreAddressMutation } = api;
+  useUserAddressMutation,
+  useGetUserAddressesQuery,
+} = api;

@@ -15,6 +15,7 @@ import { fonts } from '../../styles/fonts';
 import { platformStyles } from '../../styles/platform';
 import { setGlobalLikedItems } from '../../utils/likedItems';
 import { useGetStatesQuery } from '../../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export const tiffinProviders = [
   {
     id: 1,
@@ -53,6 +54,7 @@ const HomeScreen = ({ navigation }) => {
   // Add this useEffect after line 44
   useEffect(() => {
     console.log('States API Response in HomeScreen:', states);
+
   }, [states]);
 
   const filteredProviders = tiffinProviders.filter(provider => {

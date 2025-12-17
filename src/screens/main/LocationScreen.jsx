@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBa
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
-import { useGetCitiesQuery,useGetStatesQuery } from '../../services/api';
+import { useGetCitiesMutation,useGetStatesQuery,useGetUserAddressesQuery } from '../../services/api';
 import { useSelector } from 'react-redux';
+import ConfirmLocationScreen from './ConfirmLocationScreen';
 // const savedAddresses = [
 //   {
 //     id: 1,
@@ -42,12 +43,54 @@ import { useSelector } from 'react-redux';
 
 const LocationScreen = ({ navigation,route}) => {
   const user = useSelector(state => state.auth.user);
+  const token = useSelector(state => state.auth.token); // Add this line
   const [searchText, setSearchText] = useState('');
   const [addresses, setAddresses] = useState([]);
+  // const [selectedStateId, setSelectedStateId] = useState(1);
+  const [selectedStateId, setSelectedStateId] = useState(null);
+  // const { 
+  //   data: cities, 
+  //   error: citiesError, 
+  //   isLoading: citiesLoading 
+  // } = useGetCitiesMutation(selectedStateId, {
+  //   skip: !selectedStateId,
+  // });
 
-  const { data: cities, isLoading: citiesLoading } = useGetCitiesQuery();
+  const [getCities, { data: cities, error: citiesError, isLoading: citiesLoading }] = useGetCitiesMutation();
+
+  console.log('Mutation state:', { cities, citiesError, citiesLoading, selectedStateId });
+
+  useEffect(() => {
+    console.log('selectedStateId changed:', selectedStateId);
+    if (selectedStateId) {
+      console.log('Calling getCities with stateId:', selectedStateId);
+      getCities(selectedStateId)
+        .then(result => console.log('getCities success:', result))
+        .catch(error => console.log('getCities error:', error));
+    }
+  }, [selectedStateId]);
+
   
-  const { data: states, isLoading: statesLoading } = useGetStatesQuery();
+  // const { data: cities, error: citiesError, isLoading: citiesLoading } = useGetCitiesQuery(selectedStateId);
+  
+  const { data: states, error: statesError ,isLoading: statesLoading } = useGetStatesQuery();
+  const { data: userAddresses, error: userAddressesError,isLoading } = useGetUserAddressesQuery(
+    undefined, {
+      skip: !token, //  THIS FIXES 401 ERROR
+    }
+  );
+
+  useEffect(() => {
+    console.log('States data:', states);
+    if (states?.status && states?.data?.length > 0) {
+      const firstState = states.data[0];
+      console.log('First state:', firstState);
+      const stateId = firstState._id || firstState.id;
+      console.log('Setting selectedStateId to:', stateId);
+      setSelectedStateId(stateId);
+    }
+  }, [states]);
+  
 
   useEffect(() => {
     if (route.params?.newAddress) {
@@ -55,23 +98,47 @@ const LocationScreen = ({ navigation,route}) => {
     }
   }, [route.params?.newAddress]);
 
-  // Convert API data to display format
+  
+
   useEffect(() => {
-    if (cities?.data) {
-      const formattedAddresses = cities.data.map((city, index) => ({
-        id: index + 1,
+    let allAddresses = [];
+  
+    // USER ADDRESSES
+    if (userAddresses?.status && userAddresses?.data) {
+      const formattedUserAddresses = userAddresses.data.map(addr => ({
+        id: addr._id,
+        type: addr.type || 'Home',
+        name: addr.type || 'Saved',
+        address: addr.address,
+        area: `${addr.city?.cityName}, ${addr.state?.stateName} - ${addr.pincode}`,
+        isSelected: false,
+      }));
+      allAddresses = [...formattedUserAddresses];
+    }
+
+  
+    //  CITIES
+    if (cities?.status && cities?.data) {
+      const formattedCities = cities.data.map(city => ({
+        id: city._id||city.id,
         type: 'City',
         name: city.cityName,
         address: city.cityName,
-        area: `${city.cityName}, ${city.stateName || 'India'}`,
-        isSelected: false
+        area: `${city.cityName}, ${city.state?.stateName}`,
+        isSelected: false,
       }));
-      setAddresses(formattedAddresses);
+      allAddresses = [...allAddresses, ...formattedCities];
     }
-  }, [cities]);
+    console.log('All Addresses:', allAddresses);
+    setAddresses(allAddresses);
+  }, [cities, userAddresses]);
 
-
-
+  console.log("RAW Cities", cities);
+  console.log("RAW User Addresses", userAddresses);
+  console.log("Cities error", citiesError)
+  console.log("User Addresses error", userAddressesError)
+  console.log("States error", statesError)
+console.log(ConfirmLocationScreen)
 useEffect(() => {
   console.log('Cities API Response:', cities);
 }, [cities]);
@@ -132,11 +199,11 @@ useEffect(() => {
     </TouchableOpacity>
   );
 
-  const filteredAddresses = addresses.filter(address => 
-  address.type.toLowerCase().includes(searchText.toLowerCase()) ||
-  address.name.toLowerCase().includes(searchText.toLowerCase()) ||
-  address.address.toLowerCase().includes(searchText.toLowerCase()) ||
-  address.area.toLowerCase().includes(searchText.toLowerCase())
+
+const filteredAddresses = addresses.filter(addr =>
+  `${addr.type} ${addr.name} ${addr.address} ${addr.area}`
+    .toLowerCase()
+    .includes(searchText.toLowerCase())
 );
 
 return (
@@ -183,12 +250,7 @@ return (
         </View>
       </TouchableOpacity>
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Available Cities</Text>
-      </View>
-{citiesLoading ? (
-  <Text style ={styles.loadingText}>Loading cities...</Text>
-) :(
+      
 <FlatList
         data={filteredAddresses}
         renderItem={renderAddress}
@@ -196,7 +258,7 @@ return (
         style={styles.list}
         showsVerticalScrollIndicator={false}
       />
-)}
+
        <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Saved</Text>
       </View>

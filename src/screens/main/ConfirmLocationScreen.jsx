@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,12 @@ import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from '../../components/common/Button';
 import {
-  useStoreAddressMutation,
-  useGetCitiesQuery,
+  useUserAddressMutation,
+  useGetCitiesMutation,
   useGetStatesQuery,
 } from '../../services/api';
 import { useSelector } from 'react-redux';
-
+import { Picker } from '@react-native-picker/picker';
 
 const ConfirmLocationScreen = ({ navigation }) => {
   const user = useSelector(state => state.auth.user);
@@ -28,18 +28,64 @@ const ConfirmLocationScreen = ({ navigation }) => {
   const [landmark, setLandmark] = useState('');
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [selectedAddressType, setSelectedAddressType] = useState('Home');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedState, setSelectedState] = useState('');
-  const [storeAddress, { isLoading }] = useStoreAddressMutation();
+  const [selectedStateId, setSelectedStateId] = useState('');
+  const [selectedCityId, setSelectedCityId] = useState('');
+
+  // const [selectedCity, setSelectedCity] = useState('');
+  // const [selectedState, setSelectedState] = useState('');
+  const [storeAddress, { isLoading }] = useUserAddressMutation();
   const [pincode, setPincode] = useState('');
-  const { data: cities } = useGetCitiesQuery();
   const { data: states } = useGetStatesQuery();
-  const token = useSelector(state => state.auth.token);
+
+  // console.log('States data in ConfirmLocation:', states);
+  const [
+    getCities,
+    { data: cities, error: citiesError, isLoading: citiesLoading },
+  ] = useGetCitiesMutation();
+
+  // console.log('ConfirmLocation Debug:', {
+  //   selectedStateId,
+  //   cities,
+  //   citiesError,
+  //   citiesLoading,
+  // });
+
+  useEffect(() => {
+    // console.log('State changed to:', selectedStateId);
+    if (selectedStateId !== '') {
+      console.log('Calling getCities API with stateId:', selectedStateId);
+      getCities(selectedStateId)
+        .unwrap()
+        .then(result => {
+          console.log('Cities API Success:', result);
+        })
+        .catch(error => {
+          console.log('Cities API Error:', error);
+        });
+    }
+  }, [selectedStateId, getCities]);
+
+  // Auto-select first state when states load
+  useEffect(() => {
+    if (states?.status && states?.data?.length > 0 && selectedStateId === '') {
+      const firstState = states.data[0];
+      const stateId = firstState._id || firstState.id;
+      console.log('Auto-setting selectedStateId to:', stateId);
+      setSelectedStateId(stateId);
+    }
+  }, [states, selectedStateId]);
+
+  
+
+  // const { data: cities } = useGetCitiesMutation(selectedStateId,{
+  //   skip:!selectedStateId,
+  // });
+  const token = useSelector(state => state.auth);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
-console.log('Token:', token);
-console.log('Is Authenticated:', isAuthenticated);
-console.log('User:', user);
+  // console.log('Token:', token);
+  // console.log('Is Authenticated:', isAuthenticated);
+  // console.log('User:', user);
 
   const addressTypes = [
     { id: 'Home', icon: 'home', label: 'Home' },
@@ -48,26 +94,69 @@ console.log('User:', user);
   ];
 
   const handleSave = async () => {
-    if (!receiverName || !phoneNumber || !landmark || !selectedState || !selectedCity || !pincode) {
+    console.log('Form Values:', {
+      receiverName,
+      phoneNumber,
+      landmark,
+      selectedStateId,
+      selectedCityId,
+      pincode,
+    });
+    if (
+      !receiverName ||
+      !phoneNumber ||
+      !landmark ||
+      selectedStateId === '' ||
+      selectedCityId === '' ||
+      !pincode
+    ) {
       Alert.alert('Error', 'Please fill all required fields');
+console.log('Form Values:', {
+        receiverName,
+        phoneNumber,
+        landmark,
+        selectedStateId,
+        selectedCityId,
+        pincode,
+      });
+      console.log('Cities data:', cities);
+      console.log('Cities loading:', citiesLoading);
+      console.log('Cities error:', citiesError);
+      console.log('Validation check:', {
+        receiverName: !!receiverName,
+        phoneNumber: !!phoneNumber, 
+        landmark: !!landmark,
+        selectedStateId: selectedStateId,
+        selectedCityId: selectedCityId,
+        pincode: !!pincode
+      });
+      
+
       return;
     }
     if (!isAuthenticated || !token) {
       Alert.alert('Error', 'Please login again');
-      navigation.navigate('Login');
+      navigation.navigate('MainTabs');
       return;
     }
+
     try {
       const addressData = {
-        userId: user?.id,
-        city: selectedCity,
-        state: selectedState,
-        pincode:pincode,
+        id: user?._id || user?.id,
+        city: selectedCityId ? parseInt(selectedCityId) : null,
+        state: selectedStateId ? parseInt(selectedStateId) : null,
+        pincode: pincode,
         IName: receiverName,
         IPhone: phoneNumber,
         address: landmark,
       };
+      if (!addressData.city || !addressData.state) {
+        Alert.alert('Error', 'Please select valid state and city');
+        return;
+      }
+
       console.log('Address Data Sending:', addressData);
+      console.log('huhuhu', cities);
       const result = await storeAddress(addressData).unwrap();
       console.log('API Response Success:', result);
       if (result.status) {
@@ -78,14 +167,19 @@ console.log('User:', user);
           type: selectedAddressType,
           name: receiverName,
           address: landmark,
-          area: `${selectedCity || 'City'},${selectedState || 'State'}`,
+          area: `${selectedCityId || 'City'},${selectedStateId || 'State'}`,
+
+          // area: `${selectedCity || 'City'},${selectedState || 'State'}`,
           isSelected: false,
         };
         navigation.navigate('LocationScreen', { newAddress });
       }
     } catch (error) {
       console.log('API Response Error:', error);
-      Alert.alert('Error', error.data?.message || 'Failed to save address');
+      Alert.alert(
+        'Error',
+        error.data?.message|| 'Failed to save address',
+      );
     }
   };
 
@@ -164,21 +258,56 @@ console.log('User:', user);
           placeholderTextColor={colors.textSecondary}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="State *"
-          value={selectedState}
-          onChangeText={setSelectedState}
-          placeholderTextColor={colors.textSecondary}
-        />
+       
+        <View style={styles.dropdown}>
+          <Picker
+            selectedValue={selectedStateId}
+                        onValueChange={value => {
+              if (!value) return; 
+              setSelectedStateId(value);
+              setSelectedCityId('');
+            }}
+          >
+            <Picker.Item label="Select State *" value={''} color={colors.textSecondary} />
+            {states?.data?.map(state => {
+              // console.log('Rendering state:', state);
+              return (
+                <Picker.Item
+                  key={state._id}
+                  label={state.stateName}
+                  value={state._id}
 
-        <TextInput
-          style={styles.input}
-          placeholder="City *"
-          value={selectedCity}
-          onChangeText={setSelectedCity}
-          placeholderTextColor={colors.textSecondary}
-        />
+                />
+              );
+            })}
+          </Picker>
+        </View>
+
+       
+        <View style={styles.dropdown}>
+          <Picker
+            enabled={selectedStateId !== ''}
+            selectedValue={selectedCityId}
+            onValueChange={(value,index) => 
+              {console.log('City picker changed to:',value)
+              if (index === 0){
+                setSelectedCityId('');
+                return;
+              }
+                setSelectedCityId(value)
+              }}
+          >
+            <Picker.Item label="Select City *" value={''} color={colors.textSecondary} />
+            {cities?.data?.map(city => (
+              <Picker.Item
+                  key={city._id||city.id}
+                  label={city.cityName}
+                  value={city._id}
+                />
+              ))}
+          </Picker>
+        </View>
+
         <TextInput
           style={styles.input}
           placeholder="Pincode *"
@@ -353,6 +482,13 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     marginBottom: 16,
   },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',

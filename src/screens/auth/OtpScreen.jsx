@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useVerifyOtpMutation, useResendOtpMutation } from '../../services/api';
 import { setCredentials } from '../../store/authSlice';
 import {
@@ -15,9 +15,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from '../../components/common/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OtpScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
+  const user = useSelector((state)=> state.auth.user);
   const [apiError, setApiError] = React.useState('');
   const [successMessage, setSuccessMessage] = React.useState('');
   const [countdown, setCountdown] = React.useState(60);
@@ -82,15 +84,28 @@ const OtpScreen = ({ route, navigation }) => {
         otp: otpString,
       }).unwrap();
       console.log('OTP Verification Success:',result);
-      if (result.status) {
+      if (result.status && result.token) {
+        // Set Redux state
         dispatch(
           setCredentials({
-            token:result.token,
-            user:result.user||{id: result.userId
-            },
-          }),
+            token: result.token,
+            user: result.user,
+          })
         );
-        navigation.navigate('MainTabs');
+        
+        console.log("User OTP ", user);
+        // Set AsyncStorage with matching keys from App.jsx
+        await AsyncStorage.setItem('token', result.token);
+        await AsyncStorage.setItem('user', JSON.stringify(result.user));
+        
+        console.log('Credentials set successfully');
+        
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainTabs' }],
+        });
+      
+
       }
     } catch (error) {
       console.log('OTP Verification Error:', error);
@@ -98,6 +113,7 @@ const OtpScreen = ({ route, navigation }) => {
     }
   };
 
+  
   React.useEffect(() => {
     setCountdown(60); 
   }, []);
