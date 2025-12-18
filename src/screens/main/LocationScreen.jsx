@@ -1,9 +1,21 @@
-import React, { useState ,useEffect} from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+  StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
-import { useGetCitiesMutation,useGetStatesQuery,useGetUserAddressesQuery } from '../../services/api';
+import {
+  useGetCitiesMutation,
+  useGetStatesQuery,
+  useGetUserAddressesQuery,
+} from '../../services/api';
 import { useSelector } from 'react-redux';
 import ConfirmLocationScreen from './ConfirmLocationScreen';
 // const savedAddresses = [
@@ -41,27 +53,17 @@ import ConfirmLocationScreen from './ConfirmLocationScreen';
 //   }
 // ];
 
-const LocationScreen = ({ navigation,route}) => {
+const LocationScreen = ({ navigation, route }) => {
   const user = useSelector(state => state.auth.user);
   const token = useSelector(state => state.auth.token); // Add this line
   const [searchText, setSearchText] = useState('');
   const [addresses, setAddresses] = useState([]);
-  // const [selectedStateId, setSelectedStateId] = useState(1);
   const [selectedStateId, setSelectedStateId] = useState(null);
-  // const { 
-  //   data: cities, 
-  //   error: citiesError, 
-  //   isLoading: citiesLoading 
-  // } = useGetCitiesMutation(selectedStateId, {
-  //   skip: !selectedStateId,
-  // });
 
-  const [getCities, { data: cities, error: citiesError, isLoading: citiesLoading }] = useGetCitiesMutation();
-
-  console.log('Mutation state:', { cities, citiesError, citiesLoading, selectedStateId });
-
+  const [getCities, { data: cities, isLoading: citiesLoading }] =
+    useGetCitiesMutation();
+  
   useEffect(() => {
-    console.log('selectedStateId changed:', selectedStateId);
     if (selectedStateId) {
       console.log('Calling getCities with stateId:', selectedStateId);
       getCities(selectedStateId)
@@ -70,27 +72,26 @@ const LocationScreen = ({ navigation,route}) => {
     }
   }, [selectedStateId]);
 
-  
-  // const { data: cities, error: citiesError, isLoading: citiesLoading } = useGetCitiesQuery(selectedStateId);
-  
-  const { data: states, error: statesError ,isLoading: statesLoading } = useGetStatesQuery();
-  const { data: userAddresses, error: userAddressesError,isLoading } = useGetUserAddressesQuery(
-    undefined, {
-      skip: !token, //  THIS FIXES 401 ERROR
-    }
+  const { data: states, isLoading: statesLoading } = useGetStatesQuery();
+  const { data: userAddresses, isLoading, error } = useGetUserAddressesQuery(
+    undefined,
+    {
+      skip: !token,
+    },
   );
+  
 
   useEffect(() => {
-    console.log('States data:', states);
+    console.log('userAddresses query result:', { userAddresses, isLoading, error, token });
+  }, [userAddresses, isLoading, error, token]);
+
+  useEffect(() => {
     if (states?.status && states?.data?.length > 0) {
       const firstState = states.data[0];
-      console.log('First state:', firstState);
       const stateId = firstState._id || firstState.id;
-      console.log('Setting selectedStateId to:', stateId);
       setSelectedStateId(stateId);
     }
   }, [states]);
-  
 
   useEffect(() => {
     if (route.params?.newAddress) {
@@ -98,73 +99,56 @@ const LocationScreen = ({ navigation,route}) => {
     }
   }, [route.params?.newAddress]);
 
-  
-
   useEffect(() => {
+    console.log('userAddresses:', userAddresses);
+    console.log('states:', states);
+    console.log('cities:', cities);
+    
     let allAddresses = [];
-  
+
     // USER ADDRESSES
     if (userAddresses?.status && userAddresses?.data) {
-      const formattedUserAddresses = userAddresses.data.map(addr => ({
-        id: addr._id,
-        type: addr.type || 'Home',
-        name: addr.type || 'Saved',
-        address: addr.address,
-        area: `${addr.city?.cityName}, ${addr.state?.stateName} - ${addr.pincode}`,
-        isSelected: false,
-      }));
+      const formattedUserAddresses = userAddresses.data.map(addr => {
+        console.log('Processing address:', addr);
+        const cityName = cities?.data?.find(c => c.id === addr.city)?.cityName || 'Unknown City';
+        const stateName = states?.data?.find(
+          s => s.id === addr.state,
+        )?.stateName || 'Unknown State';
+
+        return {
+          id: addr.id,
+          type: addr.type || 'Home',
+          name: addr.rName || addr.name || 'No Name',
+          address: addr.address,
+          area: `${cityName}, ${stateName} - ${addr.pincode}`,
+          isSelected: false,
+        };
+      });
+
       allAddresses = [...formattedUserAddresses];
     }
 
-  
-    //  CITIES
-    if (cities?.status && cities?.data) {
-      const formattedCities = cities.data.map(city => ({
-        id: city._id||city.id,
-        type: 'City',
-        name: city.cityName,
-        address: city.cityName,
-        area: `${city.cityName}, ${city.state?.stateName}`,
-        isSelected: false,
-      }));
-      allAddresses = [...allAddresses, ...formattedCities];
-    }
-    console.log('All Addresses:', allAddresses);
+    console.log('Final addresses:', allAddresses);
     setAddresses(allAddresses);
-  }, [cities, userAddresses]);
+  }, [userAddresses, states, cities]);
 
-  console.log("RAW Cities", cities);
-  console.log("RAW User Addresses", userAddresses);
-  console.log("Cities error", citiesError)
-  console.log("User Addresses error", userAddressesError)
-  console.log("States error", statesError)
-console.log(ConfirmLocationScreen)
-useEffect(() => {
-  console.log('Cities API Response:', cities);
-}, [cities]);
+  useEffect(() => {
+    console.log('Cities API Response:', cities);
+  }, [cities]);
 
-useEffect(() => {
-  console.log('States API Response:', states);
-}, [states]);
+  useEffect(() => {
+    // console.log('States API Response:', states);
+  }, [states]);
 
-
-  const handleAddressSelect = (selectedId) => {
+  const handleAddressSelect = selectedId => {
     const updatedAddresses = addresses.map(addr => ({
       ...addr,
-      isSelected: addr.id === selectedId
+      isSelected: addr.id === selectedId,
     }));
     setAddresses(updatedAddresses);
   };
 
-  
-// useEffect(() => {
-//   if (route.params?.newAddress) {
-//     setAddresses(prev => [...prev, route.params.newAddress]);
-//   }
-// }, [route.params?.newAddress]);
-
-
-  const getIconName = (type) => {
+  const getIconName = type => {
     switch (type) {
       case 'Home':
         return 'home-outline';
@@ -176,14 +160,18 @@ useEffect(() => {
   };
 
   const renderAddress = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.addressCard, item.isSelected && styles.selectedCard]}
       onPress={() => handleAddressSelect(item.id)}
     >
       <View style={styles.addressContent}>
         <View style={styles.addressLeft}>
           <View style={styles.iconContainer}>
-            <Icon name={getIconName(item.type)} size={20} color={colors.textPrimary} />
+            <Icon
+              name={getIconName(item.type)}
+              size={20}
+              color={colors.textPrimary}
+            />
           </View>
           <View style={styles.addressDetails}>
             <Text style={styles.addressType}>{item.type}</Text>
@@ -193,25 +181,32 @@ useEffect(() => {
           </View>
         </View>
         <TouchableOpacity style={styles.moreButton}>
-          <Icon name="ellipsis-vertical" size={20} color={colors.textSecondary} />
+          <Icon
+            name="ellipsis-vertical"
+            size={20}
+            color={colors.textSecondary}
+          />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
+  const filteredAddresses = addresses.filter(addr =>
+    `${addr.type} ${addr.name} ${addr.address} ${addr.area}`
+      .toLowerCase()
+      .includes(searchText.toLowerCase()),
+  );
 
-const filteredAddresses = addresses.filter(addr =>
-  `${addr.type} ${addr.name} ${addr.address} ${addr.area}`
-    .toLowerCase()
-    .includes(searchText.toLowerCase())
-);
-
-return (
+  return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -221,7 +216,12 @@ return (
       </View>
 
       <View style={styles.searchContainer}>
-        <Icon name="search" size={20} color={colors.textSecondary} style={styles.searchIcon} />
+        <Icon
+          name="search"
+          size={20}
+          color={colors.textSecondary}
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Enter your location"
@@ -229,10 +229,15 @@ return (
           onChangeText={setSearchText}
           placeholderTextColor={colors.textSecondary}
         />
-        <Icon name="mic" size={20} color={colors.primary} style={styles.micIcon} />
+        <Icon
+          name="mic"
+          size={20}
+          color={colors.primary}
+          style={styles.micIcon}
+        />
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.addAddressButton}
         onPress={() => navigation.navigate('ConfirmLocation')}
       >
@@ -245,21 +250,24 @@ return (
           <Icon name="locate" size={20} color={colors.primary} />
         </View>
         <View style={styles.currentLocationText}>
-          <Text style={styles.currentLocationTitle}>Use your current location</Text>
+          <Text style={styles.currentLocationTitle}>
+            Use your current location
+          </Text>
           {/* <Text style={styles.currentLocationSubtitle}>Baner, Pune</Text> */}
         </View>
       </TouchableOpacity>
 
-      
-<FlatList
+      <FlatList
         data={filteredAddresses}
         renderItem={renderAddress}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
         style={styles.list}
         showsVerticalScrollIndicator={false}
       />
 
-       <View style={styles.sectionHeader}>
+      <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Saved</Text>
       </View>
     </View>
@@ -270,22 +278,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 50
+    paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    marginBottom: 10
+    marginBottom: 10,
   },
   backButton: {
-    marginRight: 15
+    marginRight: 15,
   },
   title: {
     fontSize: fonts.size.lg,
     fontFamily: fonts.family.medium,
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -297,73 +305,73 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginHorizontal: 20,
     marginBottom: 20,
-    backgroundColor: colors.surface
+    backgroundColor: colors.surface,
   },
   searchIcon: {
-    marginRight: 10
+    marginRight: 10,
   },
   searchInput: {
     flex: 1,
     fontSize: fonts.size.md,
     fontFamily: fonts.family.regular,
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   micIcon: {
-    marginLeft: 10
+    marginLeft: 10,
   },
   addAddressButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    marginBottom: 10
+    marginBottom: 10,
   },
   addAddressText: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.medium,
     color: colors.primary,
-    marginLeft: 10
+    marginLeft: 10,
   },
   currentLocationButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    marginBottom: 20
+    marginBottom: 20,
   },
   currentLocationIcon: {
     backgroundColor: colors.successLight,
     borderRadius: 20,
     padding: 8,
-    marginRight: 15
+    marginRight: 15,
   },
   currentLocationText: {
-    flex: 1
+    flex: 1,
   },
   currentLocationTitle: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
-    marginBottom: 2
+    marginBottom: 2,
   },
   currentLocationSubtitle: {
     fontSize: fonts.size.sm,
     fontFamily: fonts.family.regular,
-    color: colors.textSecondary
+    color: colors.textSecondary,
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   sectionTitle: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.medium,
     color: colors.textSecondary,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   list: {
     flex: 1,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   addressCard: {
     backgroundColor: colors.surface,
@@ -371,46 +379,46 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border
+    borderColor: colors.border,
   },
   selectedCard: {
     backgroundColor: colors.successLight,
-    borderColor: colors.primary
+    borderColor: colors.primary,
   },
   addressContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   addressLeft: {
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
   },
   iconContainer: {
     borderRadius: 8,
     padding: 8,
-    marginRight: 12
+    marginRight: 12,
   },
   addressDetails: {
-    flex: 1
+    flex: 1,
   },
   addressType: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
-    marginBottom: 4
+    marginBottom: 4,
   },
   addressName: {
     fontSize: fonts.size.sm,
     fontFamily: fonts.family.regular,
     color: colors.textSecondary,
-    marginBottom: 2
+    marginBottom: 2,
   },
   addressText: {
     fontSize: fonts.size.sm,
     fontFamily: fonts.family.regular,
     color: colors.textSecondary,
-    marginBottom: 2
+    marginBottom: 2,
   },
   loadingText: {
     textAlign: 'center',
@@ -421,11 +429,11 @@ const styles = StyleSheet.create({
   addressArea: {
     fontSize: fonts.size.sm,
     fontFamily: fonts.family.regular,
-    color: colors.textSecondary
+    color: colors.textSecondary,
   },
   moreButton: {
-    padding: 4
-  }
+    padding: 4,
+  },
 });
 
 export default LocationScreen;

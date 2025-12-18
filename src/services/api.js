@@ -48,13 +48,7 @@ export const api = createApi({
         method: 'POST',
         body: credentials,
       }),
-      // transformResponse: response => {
-      //   console.log('API Response:', response);
-      //   console.log('Token:', response.token);
-      //   console.log('User:', response.user);
-      //   console.log('Status:', response.status);
-      //   return response;
-      // },
+      
     }),
 
     //Resend OTP

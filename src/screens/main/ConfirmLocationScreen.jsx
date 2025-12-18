@@ -28,30 +28,18 @@ const ConfirmLocationScreen = ({ navigation }) => {
   const [landmark, setLandmark] = useState('');
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [selectedAddressType, setSelectedAddressType] = useState('Home');
-  const [selectedStateId, setSelectedStateId] = useState('');
+  const [selectedStateId, setSelectedStateId] = useState(null);
   const [selectedCityId, setSelectedCityId] = useState('');
-
-  // const [selectedCity, setSelectedCity] = useState('');
-  // const [selectedState, setSelectedState] = useState('');
   const [storeAddress, { isLoading }] = useUserAddressMutation();
   const [pincode, setPincode] = useState('');
   const { data: states } = useGetStatesQuery();
 
-  // console.log('States data in ConfirmLocation:', states);
   const [
     getCities,
     { data: cities, error: citiesError, isLoading: citiesLoading },
   ] = useGetCitiesMutation();
 
-  // console.log('ConfirmLocation Debug:', {
-  //   selectedStateId,
-  //   cities,
-  //   citiesError,
-  //   citiesLoading,
-  // });
-
   useEffect(() => {
-    // console.log('State changed to:', selectedStateId);
     if (selectedStateId !== '') {
       console.log('Calling getCities API with stateId:', selectedStateId);
       getCities(selectedStateId)
@@ -65,27 +53,14 @@ const ConfirmLocationScreen = ({ navigation }) => {
     }
   }, [selectedStateId, getCities]);
 
-  // Auto-select first state when states load
   useEffect(() => {
-    if (states?.status && states?.data?.length > 0 && selectedStateId === '') {
-      const firstState = states.data[0];
-      const stateId = firstState._id || firstState.id;
-      console.log('Auto-setting selectedStateId to:', stateId);
-      setSelectedStateId(stateId);
+    if (states?.status && states?.data?.length > 0 && !selectedStateId) {
+      setSelectedStateId(states.data[0].id);
     }
-  }, [states, selectedStateId]);
+  }, [states]);
 
-  
-
-  // const { data: cities } = useGetCitiesMutation(selectedStateId,{
-  //   skip:!selectedStateId,
-  // });
   const token = useSelector(state => state.auth);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-
-  // console.log('Token:', token);
-  // console.log('Is Authenticated:', isAuthenticated);
-  // console.log('User:', user);
 
   const addressTypes = [
     { id: 'Home', icon: 'home', label: 'Home' },
@@ -111,7 +86,7 @@ const ConfirmLocationScreen = ({ navigation }) => {
       !pincode
     ) {
       Alert.alert('Error', 'Please fill all required fields');
-console.log('Form Values:', {
+      console.log('Form Values:', {
         receiverName,
         phoneNumber,
         landmark,
@@ -124,13 +99,12 @@ console.log('Form Values:', {
       console.log('Cities error:', citiesError);
       console.log('Validation check:', {
         receiverName: !!receiverName,
-        phoneNumber: !!phoneNumber, 
+        phoneNumber: !!phoneNumber,
         landmark: !!landmark,
         selectedStateId: selectedStateId,
         selectedCityId: selectedCityId,
-        pincode: !!pincode
+        pincode: !!pincode,
       });
-      
 
       return;
     }
@@ -142,14 +116,16 @@ console.log('Form Values:', {
 
     try {
       const addressData = {
-        id: user?._id || user?.id,
-        city: selectedCityId ? parseInt(selectedCityId) : null,
-        state: selectedStateId ? parseInt(selectedStateId) : null,
-        pincode: pincode,
-        IName: receiverName,
-        IPhone: phoneNumber,
+        userId: user.id,
+        city: selectedCityId,
+        state: selectedStateId,
+        pincode,
+        rName: receiverName,
+        rPhone: phoneNumber,
         address: landmark,
+        type:selectedAddressType
       };
+
       if (!addressData.city || !addressData.state) {
         Alert.alert('Error', 'Please select valid state and city');
         return;
@@ -160,26 +136,25 @@ console.log('Form Values:', {
       const result = await storeAddress(addressData).unwrap();
       console.log('API Response Success:', result);
       if (result.status) {
+
         Alert.alert('Success', result.message || 'Address saved successfully');
 
         const newAddress = {
-          id: Date.now(),
+          id: Date.now().toString(),
           type: selectedAddressType,
           name: receiverName,
           address: landmark,
-          area: `${selectedCityId || 'City'},${selectedStateId || 'State'}`,
+          area: `${selectedCityId}, ${selectedStateId}`,
 
-          // area: `${selectedCity || 'City'},${selectedState || 'State'}`,
           isSelected: false,
         };
+        
+
         navigation.navigate('LocationScreen', { newAddress });
       }
     } catch (error) {
       console.log('API Response Error:', error);
-      Alert.alert(
-        'Error',
-        error.data?.message|| 'Failed to save address',
-      );
+      Alert.alert('Error', error.data?.message || 'Failed to save address');
     }
   };
 
@@ -258,53 +233,55 @@ console.log('Form Values:', {
           placeholderTextColor={colors.textSecondary}
         />
 
-       
         <View style={styles.dropdown}>
           <Picker
             selectedValue={selectedStateId}
-                        onValueChange={value => {
-              if (!value) return; 
+            onValueChange={value => {
+              if (!value) return;
               setSelectedStateId(value);
               setSelectedCityId('');
             }}
           >
-            <Picker.Item label="Select State *" value={''} color={colors.textSecondary} />
-            {states?.data?.map(state => {
-              // console.log('Rendering state:', state);
-              return (
-                <Picker.Item
-                  key={state._id}
-                  label={state.stateName}
-                  value={state._id}
-
-                />
-              );
-            })}
+            <Picker.Item
+              label="Select State *"
+              value={''}
+              color={colors.textSecondary}
+            />
+            {states?.data?.map(state => (
+              <Picker.Item
+                key={state.id}
+                label={state.stateName}
+                value={state.id}
+              />
+            ))}
           </Picker>
         </View>
 
-       
         <View style={styles.dropdown}>
           <Picker
             enabled={selectedStateId !== ''}
             selectedValue={selectedCityId}
-            onValueChange={(value,index) => 
-              {console.log('City picker changed to:',value)
-              if (index === 0){
+            onValueChange={(value, index) => {
+              console.log('City picker changed to:', value);
+              if (index === 0) {
                 setSelectedCityId('');
                 return;
               }
-                setSelectedCityId(value)
-              }}
+              setSelectedCityId(value);
+            }}
           >
-            <Picker.Item label="Select City *" value={''} color={colors.textSecondary} />
+            <Picker.Item
+              label="Select City *"
+              value={''}
+              color={colors.textSecondary}
+            />
             {cities?.data?.map(city => (
               <Picker.Item
-                  key={city._id||city.id}
-                  label={city.cityName}
-                  value={city._id}
-                />
-              ))}
+                key={city.id}
+                label={city.cityName}
+                value={city.id}
+              />
+            ))}
           </Picker>
         </View>
 
