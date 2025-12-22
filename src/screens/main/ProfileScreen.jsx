@@ -1,14 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
-import {logout} from '../../store/authSlice';
+import { logout } from '../../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/common/Button';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user} = useSelector(state => state.auth);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+
+  const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -18,7 +27,11 @@ const ProfileScreen = ({ navigation }) => {
 
   const profileMenuItems = [
     { icon: 'person-outline', title: 'Your Profile' },
-    { icon: 'receipt-outline', title: 'Your Orders', onPress: () => navigation.navigate('OrderHistory') },
+    {
+      icon: 'receipt-outline',
+      title: 'Your Orders',
+      onPress: () => navigation.navigate('OrderHistory'),
+    },
     { icon: 'book-outline', title: 'Address Book' },
   ];
 
@@ -32,14 +45,21 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <View style={{ width: 24 }} />
       </View>
- <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Combined User and Subscription Card */}
         <View style={styles.userCard}>
           <View style={styles.userInfo}>
@@ -48,54 +68,78 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <Text style={styles.userName}>{user?.name || 'Donji Sharma'}</Text>
           </View>
-            <Button 
-            title="Renew Your Dabba Plan"
-            variant="primary"
-            size="medium"
-            style={styles.subscriptionButton}
-            onPress={() => {}}
-          />
+          <View style={styles.subscriptionButtonWrapper}>
+            <Button
+              title="Renew Your Dabba Plan"
+              variant="primary"
+              size="medium"
+              style={styles.subscriptionButton}
+              onPress={() => {}}
+            />
+          </View>
         </View>
-   {/* Profile Menu Items */}
+        {/* Profile Menu Items */}
         <View style={styles.menuSection}>
           {profileMenuItems.map((item, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={[styles.menuItem, index === profileMenuItems.length - 1 && styles.lastMenuItem]} 
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.menuItem,
+                index === profileMenuItems.length - 1 && styles.lastMenuItem,
+              ]}
               onPress={item.onPress}
             >
               <Icon name={item.icon} size={20} />
               <Text style={styles.menuText}>{item.title}</Text>
-              <Icon name="chevron-forward" size={16}/>
+              <Icon name="chevron-forward" size={16} />
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* More Section */}
-        <View style={styles.moreOuterBox}>
-          <Text style={styles.moreTitle}>More</Text>
-          <View style={styles.moreInnerBox}>
-            {moreMenuItems.map((item, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={[styles.menuItem, index === moreMenuItems.length - 1 && styles.lastMenuItem]} 
-                onPress={item.onPress}
-              >
-                <Icon name={item.icon} size={20}/>
-                <Text style={styles.menuText}>{item.title}</Text>
-                <Icon name="chevron-forward" size={16} />
-              </TouchableOpacity>
-            ))}
-          </View>
+        {/* More Dropdown */}
+        <View style={styles.moreContainer}>
+          {/* Header */}
+          <TouchableOpacity
+            style={styles.moreHeader}
+            onPress={() => setIsMoreOpen(prev => !prev)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.moreTitle}>More</Text>
+            <Icon
+              name={isMoreOpen ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.textPrimary}
+            />
+          </TouchableOpacity>
+
+          {/* Dropdown Content */}
+          {isMoreOpen && (
+            <View style={styles.moreDropdown}>
+              {moreMenuItems.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.menuItem,
+                    index === moreMenuItems.length - 1 && styles.lastMenuItem,
+                  ]}
+                  onPress={item.onPress}
+                >
+                  <Icon name={item.icon} size={20} />
+                  <Text style={styles.menuText}>{item.title}</Text>
+                  <Icon name="chevron-forward" size={16} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Icon name="log-out-outline" size={20}/>
+          <Icon name="log-out-outline" size={20} />
           <Text style={styles.logoutText}>Log Out</Text>
           <Icon name="chevron-forward" size={16} color={colors.textSecondary} />
         </TouchableOpacity>
-       </ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -122,7 +166,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingTop: 20,
     marginTop: 16,
-    marginBottom:4,
+    marginBottom: 4,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -130,7 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    paddingHorizontal:20,
+    paddingHorizontal: 20,
   },
   avatar: {
     width: 50,
@@ -146,17 +190,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
   },
-  subscriptionButton:{
-    backgroundColor:colors.primary,
-    marginHorizontal:0,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-
-},
-   menuSection: {
+  subscriptionButtonWrapper: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  
+  subscriptionButton: {
+    backgroundColor: colors.primary,
+    
+    
+  },
+  menuSection: {
     backgroundColor: colors.surface,
     marginBottom: 4,
-    
   },
   menuItem: {
     flexDirection: 'row',
@@ -166,24 +212,42 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  moreOuterBox: {
-    backgroundColor: colors.tertiary,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+  // moreContainer: {
+  //   borderRadius: 14,
+  //   marginBottom: 12,
+  //   borderWidth: 1,
+  //   borderColor: colors.border,
+  // },
+
+  moreContainer: {
+    backgroundColor: colors.surface,
+    marginBottom: 4,
   },
+  
+
+  moreHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+
+  moreDropdown: {
+    backgroundColor: colors.surface,
+    // borderTopWidth: 1,
+    // borderTopColor: colors.border,
+    // borderBottomLeftRadius: 14,
+    // borderBottomRightRadius: 14,
+  },
+
   moreTitle: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
     marginBottom: 12,
   },
-  moreInnerBox: {
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
+
   menuText: {
     flex: 1,
     fontSize: fonts.size.md,

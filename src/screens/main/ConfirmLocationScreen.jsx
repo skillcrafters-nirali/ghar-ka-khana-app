@@ -121,9 +121,9 @@ const ConfirmLocationScreen = ({ navigation }) => {
         state: selectedStateId,
         pincode,
         rName: receiverName,
-        rPhone: phoneNumber,
+        rphone: phoneNumber,
         address: landmark,
-        type:selectedAddressType
+        type:selectedAddressType || 'Home',
       };
 
       if (!addressData.city || !addressData.state) {
@@ -145,7 +145,6 @@ const ConfirmLocationScreen = ({ navigation }) => {
           name: receiverName,
           address: landmark,
           area: `${selectedCityId}, ${selectedStateId}`,
-
           isSelected: false,
         };
         

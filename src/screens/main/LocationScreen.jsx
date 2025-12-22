@@ -17,52 +17,17 @@ import {
   useGetUserAddressesQuery,
 } from '../../services/api';
 import { useSelector } from 'react-redux';
-import ConfirmLocationScreen from './ConfirmLocationScreen';
-// const savedAddresses = [
-//   {
-//     id: 1,
-//     type: 'Work',
-//     name: '1234, Green Valley Apartments',
-//     address: 'Near Baner Main Road',
-//     area: 'Baner, Pune - 411045',
-//     isSelected: true
-//   },
-//   {
-//     id: 2,
-//     type: 'Work',
-//     name: '1234, Green Valley Apartments',
-//     address: 'Near Baner Main Road',
-//     area: 'Nikol, Ahmedabad - 382330',
-//     isSelected: false
-//   },
-//   {
-//     id: 3,
-//     type: 'Home',
-//     name: '1234, Green Valley Apartments',
-//     address: 'Near Baner Main Road',
-//     area: 'Gandhinagar, Ahmedabad - 380010',
-//     isSelected: false
-//   },
-//   {
-//     id: 4,
-//     type: 'Work',
-//     name: '1234, Green Valley Apartments',
-//     address: 'Near Baner Main Road',
-//     area: 'Thaltej, Ahmedabad - 382310',
-//     isSelected: false
-//   }
-// ];
 
 const LocationScreen = ({ navigation, route }) => {
   const user = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token); // Add this line
+  const token = useSelector(state => state.auth.token);
   const [searchText, setSearchText] = useState('');
   const [addresses, setAddresses] = useState([]);
   const [selectedStateId, setSelectedStateId] = useState(null);
 
   const [getCities, { data: cities, isLoading: citiesLoading }] =
     useGetCitiesMutation();
-  
+
   useEffect(() => {
     if (selectedStateId) {
       console.log('Calling getCities with stateId:', selectedStateId);
@@ -73,16 +38,27 @@ const LocationScreen = ({ navigation, route }) => {
   }, [selectedStateId]);
 
   const { data: states, isLoading: statesLoading } = useGetStatesQuery();
-  const { data: userAddresses, isLoading, error } = useGetUserAddressesQuery(
-    undefined,
-    {
-      skip: !token,
-    },
-  );
-  
+  const {
+    data: userAddresses,
+    isLoading,
+    error,
+  } = useGetUserAddressesQuery(undefined, {
+    skip: !token,
+  });
+  console.log('userAddresses query result:', {
+    userAddresses,
+    isLoading,
+    error,
+    token,
+  });
 
   useEffect(() => {
-    console.log('userAddresses query result:', { userAddresses, isLoading, error, token });
+    console.log('userAddresses query result:', {
+      userAddresses,
+      isLoading,
+      error,
+      token,
+    });
   }, [userAddresses, isLoading, error, token]);
 
   useEffect(() => {
@@ -103,24 +79,20 @@ const LocationScreen = ({ navigation, route }) => {
     console.log('userAddresses:', userAddresses);
     console.log('states:', states);
     console.log('cities:', cities);
-    
+
     let allAddresses = [];
 
     // USER ADDRESSES
     if (userAddresses?.status && userAddresses?.data) {
       const formattedUserAddresses = userAddresses.data.map(addr => {
         console.log('Processing address:', addr);
-        const cityName = cities?.data?.find(c => c.id === addr.city)?.cityName || 'Unknown City';
-        const stateName = states?.data?.find(
-          s => s.id === addr.state,
-        )?.stateName || 'Unknown State';
 
         return {
           id: addr.id,
-          type: addr.type || 'Home',
+          type: addr.type||'Home',
           name: addr.rName || addr.name || 'No Name',
           address: addr.address,
-          area: `${cityName}, ${stateName} - ${addr.pincode}`,
+          area: `${addr['cityData.cityName']}, ${addr['stateData.stateName']} - ${addr.pincode}`,
           isSelected: false,
         };
       });
@@ -137,7 +109,7 @@ const LocationScreen = ({ navigation, route }) => {
   }, [cities]);
 
   useEffect(() => {
-    // console.log('States API Response:', states);
+    console.log('States API Response:', states);
   }, [states]);
 
   const handleAddressSelect = selectedId => {
