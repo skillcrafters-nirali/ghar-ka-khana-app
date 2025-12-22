@@ -15,7 +15,7 @@ import ProviderDetailScreen from '../screens/main/ProviderDetailScreen';
 import MenuSubscriptionScreen from '../screens/main/MenuSubscriptionScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 import FavoriteAllScreen from '../screens/main/FavoriteAllScreen';
-
+import CategoryScreen from '../screens/main/CategoryScreen';
 
 // Order Screens
 import CartScreen from '../screens/orders/CartScreen';
@@ -50,6 +50,7 @@ const AppNavigator = () => {
       <Stack.Screen name="LocationScreen" component={LocationScreen} />
       <Stack.Screen name="ConfirmLocation" component={ConfirmLocationScreen} />
       <Stack.Screen name="ProviderDetail" component={ProviderDetailScreen} />
+      <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
       <Stack.Screen name="MenuSubscription" component={MenuSubscriptionScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       

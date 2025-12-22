@@ -17,75 +17,75 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
-const subscriptionPlans = [
-  {
-    id: 1,
-    title: 'Weekly Plan',
-    type: 'Vegetarian Plan',
-    price: '₹500 - ₹900 per week',
-    description: 'Basic vegetarian meals with dal, rice, sabzi, and vegetables'
-  },
-  {
-    id: 2,
-    title: 'Monthly Plan',
-    type: 'Vegetarian Plan',
-    price: '₹2000 - ₹3500 per month',
-    description:
-      'Includes vegetarian meals with chapati, kadhi/sabzi and salad'
-  },
-  {
-    id: 3,
-    title: 'Weekly Plan',
-    type: 'Vegetarian Plan',
-    price: '₹500 - ₹900 per week',
-    description: 'Basic vegetarian meals with dal, rice, sabzi, and vegetables'
-  },
-  {
-    id: 4,
-    title: 'Monthly Plan',
-    type: 'Vegetarian Plan',
-    price: '₹2000 - ₹3500 per month',
-    description:
-      'Includes vegetarian meals with chapati, kadhi/sabzi and salad'
-  },
-];
+// // const subscriptionPlans = [
+// //   {
+// //     id: 1,
+// //     title: 'Weekly Plan',
+// //     type: 'Vegetarian Plan',
+// //     price: '₹500 - ₹900 per week',
+// //     description: 'Basic vegetarian meals with dal, rice, sabzi, and vegetables'
+// //   },
+// //   {
+// //     id: 2,
+// //     title: 'Monthly Plan',
+// //     type: 'Vegetarian Plan',
+// //     price: '₹2000 - ₹3500 per month',
+// //     description:
+// //       'Includes vegetarian meals with chapati, kadhi/sabzi and salad'
+// //   },
+// //   {
+// //     id: 3,
+// //     title: 'Weekly Plan',
+// //     type: 'Vegetarian Plan',
+// //     price: '₹500 - ₹900 per week',
+// //     description: 'Basic vegetarian meals with dal, rice, sabzi, and vegetables'
+// //   },
+// //   {
+// //     id: 4,
+// //     title: 'Monthly Plan',
+// //     type: 'Vegetarian Plan',
+// //     price: '₹2000 - ₹3500 per month',
+// //     description:
+// //       'Includes vegetarian meals with chapati, kadhi/sabzi and salad'
+// //   },
+// // ];
 
-const todaysMenu = {
-  lunch: [
-    { id: 1, left: 'Chapati', right: 'Varan/Bhaat' },
-    { id: 2, left: 'Aloo Bhaji', right: 'Pickle' },
-    { id: 3, left: 'Amti', right: 'Koshimbir' },
-  ],
-  dinner: [
-    { id: 1, left: 'Chapati', right: 'Masala Bhaat' },
-    { id: 2, left: 'Varhran Bhaji', right: 'Pickle' },
-    { id: 3, left: 'Amti', right: 'Salad' },
-  ]
-};
+// const todaysMenu = {
+//   lunch: [
+//     { id: 1, left: 'Chapati', right: 'Varan/Bhaat' },
+//     { id: 2, left: 'Aloo Bhaji', right: 'Pickle' },
+//     { id: 3, left: 'Amti', right: 'Koshimbir' },
+//   ],
+//   dinner: [
+//     { id: 1, left: 'Chapati', right: 'Masala Bhaat' },
+//     { id: 2, left: 'Varhran Bhaji', right: 'Pickle' },
+//     { id: 3, left: 'Amti', right: 'Salad' },
+//   ]
+// };
 
-const reviewsData = [
-  {
-    id: 1,
-    name: 'Nutritional Service Neeru Dhabale',
-    rating: 5,
-    review:
-      'I regularly visit this Dabbawala service and I am completely satisfied with the food and freshness. Hygiene is very good and the food is very delicious. The food comes hot and fresh daily and I am very happy with the service.'
-  },
-  {
-    id: 2,
-    name: 'Pallavi Shevade',
-    rating: 5,
-    review:
-      'The Dabbawala service has been an absolute lifesaver for me as a working professional. The food quality is consistently good and the delivery is always on time. The food comes hot and fresh every day and I am very happy with the service.'
-  },
-  {
-    id: 3,
-    name: 'Deepa Shinde',
-    rating: 5,
-    review:
-      "I've been using this Dabbawala service for over a year and I am completely satisfied with the food and freshness. Hygiene is very good and the food is very delicious. The food comes hot and fresh daily and I am very happy with the service."
-  },
-];
+// const reviewsData = [
+//   {
+//     id: 1,
+//     name: 'Nutritional Service Neeru Dhabale',
+//     rating: 5,
+//     review:
+//       'I regularly visit this Dabbawala service and I am completely satisfied with the food and freshness. Hygiene is very good and the food is very delicious. The food comes hot and fresh daily and I am very happy with the service.'
+//   },
+//   {
+//     id: 2,
+//     name: 'Pallavi Shevade',
+//     rating: 5,
+//     review:
+//       'The Dabbawala service has been an absolute lifesaver for me as a working professional. The food quality is consistently good and the delivery is always on time. The food comes hot and fresh every day and I am very happy with the service.'
+//   },
+//   {
+//     id: 3,
+//     name: 'Deepa Shinde',
+//     rating: 5,
+//     review:
+//       "I've been using this Dabbawala service for over a year and I am completely satisfied with the food and freshness. Hygiene is very good and the food is very delicious. The food comes hot and fresh daily and I am very happy with the service."
+//   },
+// ];
 
 const ProviderDetailScreen = ({ route, navigation }) => {
   const { provider } = route?.params || {
@@ -123,12 +123,12 @@ const ProviderDetailScreen = ({ route, navigation }) => {
         />
 
         {/* Subscriptions Title */}
-        <View style={styles.subscriptionsHeader}>
+        {/* <View style={styles.subscriptionsHeader}>
           <Text style={styles.subscriptionsTitle}>Subscription</Text>
-        </View>
+        </View> */}
 
         {/* Subscription Cards */}
-        <View style={styles.cardsContainer}>
+        {/* <View style={styles.cardsContainer}>
           <FlatList
             data={subscriptionPlans}
             renderItem={renderSubscriptionCard}
@@ -139,15 +139,15 @@ const ProviderDetailScreen = ({ route, navigation }) => {
             contentContainerStyle={{ paddingHorizontal: 16 }}
             style={{ height: 250 }}
           />
-        </View>
+        </View> */}
 
-        {/* Today's Menu Section */}
+        {/* Today's Menu Section
         <View style={styles.menuSection}>
           <View style={styles.decorativeTop} />
           <Text style={styles.sectionTitle}>Today's Menu</Text>
           <View style={styles.decorativeLine} />
 
-          {/* Lunch */}
+          Lunch
           <View style={styles.mealSection}>
             <Text style={styles.mealTitle}>Lunch</Text>
             <View style={styles.menuItems}>
@@ -160,7 +160,7 @@ const ProviderDetailScreen = ({ route, navigation }) => {
             </View>
           </View>
 
-          {/* Dinner */}
+          Dinner
           <View style={styles.mealSection}>
             <Text style={styles.mealTitle}>Dinner</Text>
             <View style={styles.menuItems}>
@@ -174,10 +174,10 @@ const ProviderDetailScreen = ({ route, navigation }) => {
           </View>
 
           <View style={styles.decorativeBottom} />
-        </View>
+        </View> */}
 
         {/* Reviews Section */}
-        <View style={styles.reviewsSection}>
+        {/* <View style={styles.reviewsSection}>
           <Text style={styles.reviewsTitle}>Reviews</Text>
 
           {reviewsData.map(review => (
@@ -200,14 +200,14 @@ const ProviderDetailScreen = ({ route, navigation }) => {
             View more reviews
             <AntDesign name="right" color="#000" size={16} />
           </Text>
-        </View>
+        </View> */}
 
         {/* Book Demo Meal Button */}
-        <View style={styles.demoButtonContainer}>
+        {/* <View style={styles.demoButtonContainer}>
           <Button title="Book Your Demo Meal" variant="primary" size="large" 
           onPress={() => navigation.navigate('Cart')}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
@@ -259,11 +259,6 @@ const styles = StyleSheet.create({
     paddingRight: 16
   },
 
-  // cardsScrollView: {
-  //   paddingLeft: 16,
-  //   paddingRight: 16,
-
-  // },
   cardsContent: {
     paddingRight: 16
   },
