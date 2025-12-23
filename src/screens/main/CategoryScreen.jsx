@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -10,46 +10,13 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
-import Button from '../../components/common/Button';
 import { tiffinProviders } from '../main/HomeScreen';
 
 const CategoryScreen = ({ route, navigation }) => {
-
-  const [cart, setCart] = useState({});
-  const [addedItems, setAddedItems] = useState({});
-
   const params = route?.params ?? {};
   const { category, dishImage, dishTitle } = params;
-
-  const addToCart = id => {
-    setAddedItems(prev => ({ ...prev, [id]: true }));
-    setCart(prev => ({ ...prev, [id]: 1 }));
-  };
-
-  const increaseQty = id => {
-    setCart(prev => ({ ...prev, [id]: prev[id] + 1 }));
-  };
-
-  const decreaseQty = id => {
-    setCart(prev => {
-      if (prev[id] === 1) {
-        const updatedCart = { ...prev };
-        delete updatedCart[id];
-
-        setAddedItems(a => {
-          const updatedAdded = { ...a };
-          delete updatedAdded[id];
-          return updatedAdded;
-        });
-
-        return updatedCart;
-      }
-      return { ...prev, [id]: prev[id] - 1 };
-    });
-  };
 
   if (!category) {
     return null;
@@ -60,8 +27,6 @@ const CategoryScreen = ({ route, navigation }) => {
   );
 
   const renderProvider = ({ item }) => {
-    const qty = cart[item.id] || 1;
-
     return (
       <TouchableOpacity
         style={styles.restaurantCard}
@@ -89,66 +54,23 @@ const CategoryScreen = ({ route, navigation }) => {
               <Text style={styles.ratingText}>{item.rating}</Text>
             </View>
           </View>
-
-          {/* TRY & SUBSCRIBE */}
-          <View style={styles.actionRow}>
-            <Button
-              title="Try"
-              variant="outline"
-              size="small"
-              style={styles.tryBtn}
-              onPress={() => {}}
-            />
-            <Button
-              title="Subscribe"
-              variant="secondary"
-              size="small"
-              style={styles.subscribeBtn}
-              onPress={() => {}}
-            />
-          </View>
         </View>
 
-        {/* RIGHT IMAGE + CART */}
+        {/* RIGHT IMAGE */}
         <View style={styles.rightSection}>
           <Image source={{ uri: item.image }} style={styles.restaurantImage} />
-
-          {!addedItems[item.id] ? (
-            <Button
-              title="Add Cart"
-              size="small"
-              variant="primary"
-              style={styles.addCartBtn}
-              onPress={() => addToCart(item.id)}
-            />
-          ) : (
-            <View style={styles.cartControls}>
-              <TouchableOpacity
-                style={styles.cartBtn}
-                onPress={() => decreaseQty(item.id)}
-              >
-                <Text style={styles.cartBtnText}>−</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.cartQty}>{qty}</Text>
-
-              <TouchableOpacity
-                style={styles.cartBtn}
-                onPress={() => increaseQty(item.id)}
-              >
-                <Text style={styles.cartBtnText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </TouchableOpacity>
     );
   };
 
-  /* ---------------- UI ---------------- */
   return (
     <View style={styles.container}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
 
       {/* TOP IMAGE */}
       <View style={styles.imageWrapper}>
@@ -278,22 +200,6 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
 
-  actionRow: {
-    flexDirection: 'row',
-    marginTop: 8,
-    gap: 8,
-  },
-
-  tryBtn: {
-    borderRadius: 6,
-    paddingHorizontal: 14,
-  },
-
-  subscribeBtn: {
-    borderRadius: 6,
-    paddingHorizontal: 14,
-  },
-
   rightSection: {
     alignItems: 'center',
   },
@@ -302,42 +208,6 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 12,
-  },
-
-  addCartBtn: {
-    marginTop: 6,
-    borderRadius: 8,
-    paddingHorizontal: 18,
-  },
-
-  cartControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-
-  cartBtn: {
-    width: 28,
-    height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  cartBtnText: {
-    fontSize: fonts.size.md,
-    color: colors.primary,
-    fontFamily: fonts.family.bold,
-  },
-
-  cartQty: {
-    width: 28,
-    textAlign: 'center',
-    fontFamily: fonts.family.bold,
-    color: colors.textPrimary,
   },
 });
 

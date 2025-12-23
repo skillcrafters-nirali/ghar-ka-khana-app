@@ -405,15 +405,16 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
+import OfferSlider from '../../components/home/OfferSlider';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import { platformStyles } from '../../styles/platform';
-import Button from '../../components/common/Button';
 import { setGlobalLikedItems } from '../../utils/likedItems';
 import { useGetStatesQuery } from '../../services/api';
 
 export const tiffinProviders = [
+  // Gujarati Restaurants
   {
     id: 1,
     name: 'Rotlo Gujarati Rasthal',
@@ -421,40 +422,228 @@ export const tiffinProviders = [
     description: 'Authentic Gujarati home-style meals',
     price: '₹120 / meal',
     category: 'Gujarati',
-    image:
-      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    menu: {
+      lunch: {
+        Subji: [
+          { id: 1, name: 'Bhindi Masala', price: 40 },
+          { id: 2, name: 'Aloo Tamatar', price: 35 },
+        ],
+        Roti: [
+          { id: 3, name: 'Chapati', price: 10 },
+          { id: 4, name: 'Thepla', price: 15 },
+        ],
+        Dal: [
+          { id: 5, name: 'Dal Fry', price: 30 },
+        ],
+        Rice: [
+          { id: 6, name: 'Plain Rice', price: 20 },
+        ],
+        Papad: [
+          { id: 7, name: 'Roasted Papad', price: 10 },
+        ],
+      },
+    
+      dinner: {
+        Subji: [
+          { id: 8, name: 'Paneer Bhurji', price: 60 },
+        ],
+        Roti: [
+          { id: 9, name: 'Butter Roti', price: 15 },
+        ],
+        Dal: [
+          { id: 5, name: 'Dal Fry', price: 30 },
+        ],
+        Rice: [
+          { id: 6, name: 'Plain Rice', price: 20 },
+        ],
+        Papad: [
+          { id: 7, name: 'Roasted Papad', price: 10 },
+        ],
+      },
+    }
+    
+    
   },
   {
     id: 2,
-    name: 'Shiv Shakti Kathiyavadi',
-    rating: 4.8,
-    description: 'Traditional Kathiyavadi spicy home meals',
-    price: '₹140 / meal',
-    category: 'Kathiyavadi',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    name: 'Gujarati Rasoi',
+    rating: 4.3,
+    description: 'Traditional Gujarati thali meals',
+    price: '₹110 / meal',
+    category: 'Gujarati',
+    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
   },
   {
     id: 3,
+    name: 'Shree Gujarati Thali',
+    rating: 4.6,
+    description: 'Homely Gujarati delicacies',
+    price: '₹130 / meal',
+    category: 'Gujarati',
+    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+  },
+  {
+    id: 4,
+    name: 'Rasoi Ghar',
+    rating: 4.4,
+    description: 'Authentic Gujarati cuisine',
+    price: '₹125 / meal',
+    category: 'Gujarati',
+    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+  },
+  {
+    id: 5,
+    name: 'Swad Gujarati',
+    rating: 4.2,
+    description: 'Traditional Gujarati home meals',
+    price: '₹115 / meal',
+    category: 'Gujarati',
+    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+  },
+
+  // Punjabi Restaurants
+  {
+    id: 6,
     name: 'Nutan Restaurant',
     rating: 4.7,
     description: 'Rich Punjabi home-style thali meals',
     price: '₹180 / meal',
     category: 'Punjabi',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
   {
-    id: 4,
-    name: 'Rajasthani ',
+    id: 7,
+    name: 'Amritsari Tandoor',
+    rating: 4.5,
+    description: 'Authentic Punjabi tandoori dishes',
+    price: '₹190 / meal',
+    category: 'Punjabi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+  },
+  {
+    id: 8,
+    name: 'Patiala Rasoi',
+    rating: 4.6,
+    description: 'Traditional Punjabi meals with spices',
+    price: '₹185 / meal',
+    category: 'Punjabi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+  },
+  {
+    id: 9,
+    name: 'Ludhiana Food Corner',
+    rating: 4.4,
+    description: 'Authentic Punjabi cuisine',
+    price: '₹175 / meal',
+    category: 'Punjabi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+  },
+  {
+    id: 10,
+    name: 'Shahi Punjabi Thali',
+    rating: 4.7,
+    description: 'Rich Punjabi thali meals',
+    price: '₹200 / meal',
+    category: 'Punjabi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+  },
+
+  // Kathiyavadi Restaurants
+  {
+    id: 11,
+    name: 'Shiv Shakti Kathiyavadi',
+    rating: 4.8,
+    description: 'Traditional Kathiyavadi spicy home meals',
+    price: '₹140 / meal',
+    category: 'Kathiyavadi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+  },
+  {
+    id: 12,
+    name: 'Kathiyavadi Rasoi',
+    rating: 4.6,
+    description: 'Authentic Kathiyavadi cuisine',
+    price: '₹150 / meal',
+    category: 'Kathiyavadi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+  },
+  {
+    id: 13,
+    name: 'Rann Rasoi',
+    rating: 4.5,
+    description: 'Traditional Kathiyavadi meals',
+    price: '₹145 / meal',
+    category: 'Kathiyavadi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+  },
+  {
+    id: 14,
+    name: 'Kathiyavadi Thali House',
+    rating: 4.7,
+    description: 'Spicy Kathiyavadi delicacies',
+    price: '₹150 / meal',
+    category: 'Kathiyavadi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+  },
+  {
+    id: 15,
+    name: 'Desi Kathiyavadi',
+    rating: 4.6,
+    description: 'Authentic home-style Kathiyavadi meals',
+    price: '₹140 / meal',
+    category: 'Kathiyavadi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+  },
+
+  // Rajasthani Restaurants
+  {
+    id: 16,
+    name: 'Rajasthani Rasoi',
     rating: 4.7,
     description: 'Authentic Rajasthani traditional meals',
     price: '₹160 / meal',
     category: 'Rajasthani',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+  },
+  {
+    id: 17,
+    name: 'Shahi Rajasthani Thali',
+    rating: 4.8,
+    description: 'Royal Rajasthani meals with authentic flavors',
+    price: '₹170 / meal',
+    category: 'Rajasthani',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+  },
+  {
+    id: 18,
+    name: 'Desert Rasoi',
+    rating: 4.6,
+    description: 'Traditional Rajasthani thali meals',
+    price: '₹165 / meal',
+    category: 'Rajasthani',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+  },
+  {
+    id: 19,
+    name: 'Marwari Thali House',
+    rating: 4.5,
+    description: 'Authentic Marwari cuisine',
+    price: '₹160 / meal',
+    category: 'Rajasthani',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+  },
+  {
+    id: 20,
+    name: 'Rajwada Rasoi',
+    rating: 4.7,
+    description: 'Rajasthani traditional meals with spices',
+    price: '₹170 / meal',
+    category: 'Rajasthani',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
 ];
+
 
 const filters = [
   {
@@ -483,35 +672,6 @@ const filters = [
   },
 ];
 
-const offers = [
-  {
-    id: 1,
-    title: '100% Off',
-    subtitle: 'Enjoy your first trial meal for free',
-    code: 'NEW99',
-    image:
-      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe',
-    bgColor: colors.successLight,
-  },
-  {
-    id: 2,
-    title: 'Flat ₹50 Off',
-    subtitle: 'On orders above ₹299',
-    code: 'SAVE50',
-    image:
-      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38',
-    bgColor: colors.tertiary,
-  },
-  {
-    id: 3,
-    title: 'Free Delivery',
-    subtitle: 'For premium subscribers',
-    code: 'FREEDEL',
-    image:
-      'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-    bgColor: colors.successLight,
-  },
-];
 
 
 const HomeScreen = ({ navigation }) => {
@@ -633,28 +793,8 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: 20 }}
         ListHeaderComponent={
           <>
-            {/* OFFER CARD */}
-            <View style={styles.offerCard}>
-              <View>
-                <Text style={styles.offerTitle}>100% Off</Text>
-                <Text style={styles.offerSub}>
-                  Enjoy your first trial meal for free
-                </Text>
-                <Button
-                  title="NEW99"
-                  variant="secondary"
-                  size="small"
-                  style={{ marginTop: 8, alignSelf: 'flex-start' }}
-                />
-              </View>
-
-              <Image
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe',
-                }}
-                style={styles.offerImage}
-              />
-            </View>
+          <OfferSlider />
+            
 
             {/* POPULAR FILTER */}
             <Text style={styles.sectionTitle}>Popular Filter</Text>
