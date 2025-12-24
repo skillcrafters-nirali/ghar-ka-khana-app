@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet,Dimensions} from 'react-native';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from './Button';
@@ -10,14 +10,34 @@ const SubscriptionCard = ({ plan, onBuyPress }) => {
   return (
     <View style={styles.card}>
       <Text style={styles.planTitle}>{plan.title}</Text>
+      {/* COMBO NAME (ADD HERE) */}
+      {plan.comboName && (
+        <Text style={styles.comboName}>{plan.comboName}</Text>
+      )}
+
+      {/* PRICE */}
+      <Text style={styles.price}>₹{plan.price}</Text>
+
+      {/* PRICE LABEL (DISCOUNT / FREE) */}
+      {plan.priceLabel && (
+        <Text style={styles.benefit}>{plan.priceLabel}</Text>
+      )}
       
-      <View style={styles.planTypeContainer}>
+      {/* <View style={styles.planTypeContainer}>
         <View style={[styles.dot, { backgroundColor: isVeg ? colors.secondary : colors.error }]} />
         <Text style={styles.planType}>{plan.type}</Text>
-      </View>
+      </View> */}
       
-      <Text style={styles.price}>{plan.price}</Text>
-      <Text style={styles.description}>{plan.description}</Text>
+      {/* <Text style={styles.price}>{plan.price}</Text> */}
+      {/* <Text style={styles.description}>{plan.description}</Text> */}
+      
+      {/* <View style={styles.itemsContainer}>
+        {plan.itemsIncluded?.map(item => (
+          <Text key={item} style={styles.itemText}>
+            • {item}
+          </Text>
+        ))}
+      </View> */}
       
       <View style={styles.bottomRow}>
       <Button
@@ -38,8 +58,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
-    marginRight: 12,
-    width: 280,   
+    // marginRight: 12,
+    // width: 280,   
+    width: Dimensions.get('window').width - 32,
+
     borderWidth: 1,
     borderColor: colors.textPrimary,
     shadowColor: colors.shadow,
@@ -55,6 +77,24 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  comboName: {
+    marginTop: 4,
+    fontSize: fonts.size.sm,
+    color: colors.textSecondary,
+  },
+
+  price: {
+    marginTop: 8,
+    fontSize: fonts.size.lg,
+    fontFamily: fonts.family.bold,
+    color: colors.primary,
+  },
+
+  benefit: {
+    marginTop: 4,
+    fontSize: fonts.size.sm,
+    color: 'green',
   },
   planTypeContainer: {
     flexDirection: 'row',
@@ -84,6 +124,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: 16,
     marginBottom: 16,
+  },
+  itemsContainer: {
+    marginBottom: 12,
   },
   bottomRow: {
     flexDirection: 'row',

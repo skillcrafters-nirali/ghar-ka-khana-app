@@ -461,7 +461,20 @@ export const tiffinProviders = [
           { id: 7, name: 'Roasted Papad', price: 10 },
         ],
       },
-    }
+    },
+
+     COMBOS : [
+      {
+        id: 'combo1',
+        name: '1 Sabji + 4 Roti + salad',
+        price: 110,
+      },
+      { id: 'combo2', name: '1 sabji + 4 Roti + Rice + Daal', price: 170 },
+      
+      { id: 'combo3', name: '1 Green sabji + 1 kathol sabji + 1 sweet + salad + rice + daal + 3 roti', price: 210 },
+      { id: 'combo4', name: '2 sabji + 5 roti + 1 sweet + salad + rice daal + Bhajiya/farshan + chas ', price: 300 },
+    
+    ],
     
     
   },

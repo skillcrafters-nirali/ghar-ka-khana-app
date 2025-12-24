@@ -445,15 +445,18 @@ const createEmptyMeal = () => ({
   Papad: {},
 });
 
-const COMBOS = [
-  { id: 'combo1', name: '1 sabji + 3 Roti + Rice + Daal', price: 120 },
-  {
-    id: 'combo2',
-    name: '1 Sweet + 2 Sabji + 5 Roti + Rice + Daal + Papad + Buttermilk (Special)',
-    price: 220,
-  },
-  { id: 'combo3', name: 'Full Meal Combo', price: 250 },
-];
+// const COMBOS = [
+//   {
+//     id: 'combo1',
+//     name: '1 Sabji + 4 Roti + salad',
+//     price: 110,
+//   },
+//   { id: 'combo2', name: '1 sabji + 4 Roti + Rice + Daal', price: 170 },
+
+//   { id: 'combo3', name: '1 Green sabji + 1 kathol sabji + 1 sweet + salad + rice + daal + 3 roti', price: 210 },
+//   { id: 'combo4', name: '2 sabji + 5 roti + 1 sweet + salad + rice daal + Bhajiya/farshan + chas ', price: 300 },
+
+// ];
 
 /* ---------------- HELPERS ---------------- */
 
@@ -465,8 +468,10 @@ const calculateMealTotal = meal => {
     if (!value) return;
 
     if (MULTI_SELECT.includes(key)) {
-      Object.values(value).forEach(i => {
-        total += i.price * i.qty;
+      Object.values(value || {}).forEach(i => {
+        if (i?.qty && i?.price) {
+          total += i.price * i.qty;
+        }
       });
     } else {
       total += value.price;
@@ -480,9 +485,11 @@ const calculateMealTotal = meal => {
 
 const ProviderDetailScreen = ({ route, navigation }) => {
   const { provider } = route.params;
+  const combos = provider?.COMBOS || [];
 
   // Lunch open by default
   const [openMeal, setOpenMeal] = useState(null);
+  const [selectedCombo, setSelectedCombo] = useState(null);
 
   // All categories open by default
   const [openCategory] = useState({
@@ -506,6 +513,9 @@ const ProviderDetailScreen = ({ route, navigation }) => {
         return !!value;
       }
     });
+  };
+  const hasAnyOrder = () => {
+    return hasSelection('lunch') || hasSelection('dinner');
   };
 
   /* ---------------- ACTIONS ---------------- */
@@ -534,11 +544,32 @@ const ProviderDetailScreen = ({ route, navigation }) => {
     });
   };
 
-  const removeItem = (meal, category, id) => {
+  const toggleSingleItem = (meal, category, item) => {
     setMeals(prev => {
       const updated = { ...prev };
       const mealData = { ...updated[meal] };
-      const item = mealData[category][id];
+
+      // untick if same item clicked
+      if (mealData[category]?.id === item.id) {
+        mealData[category] = null;
+      } else {
+        mealData[category] = item;
+      }
+
+      updated[meal] = mealData;
+      return updated;
+    });
+  };
+
+  const removeItem = (meal, category, id) => {
+    if (!MULTI_SELECT.includes(category)) return;
+
+    setMeals(prev => {
+      const updated = { ...prev };
+      const mealData = { ...updated[meal] };
+      const item = mealData[category]?.[id];
+
+      if (!item) return prev;
 
       if (item.qty === 1) {
         const clone = { ...mealData[category] };
@@ -559,10 +590,12 @@ const ProviderDetailScreen = ({ route, navigation }) => {
   /* ---------------- UI HELPERS ---------------- */
 
   const removeItemCompletely = (meal, category, id) => {
+    if (!MULTI_SELECT.includes(category)) return;
+
     setMeals(prev => {
       const updated = { ...prev };
       const mealData = { ...updated[meal] };
-      const clone = { ...mealData[category] };
+      const clone = { ...(mealData[category] || {}) };
       delete clone[id];
       mealData[category] = clone;
       updated[meal] = mealData;
@@ -573,10 +606,12 @@ const ProviderDetailScreen = ({ route, navigation }) => {
   /* ---------------- COMBO LIST ---------------- */
 
   const renderComboList = () => {
+    if (!combos.length) return null;
+
     return (
       <View style={styles.comboCard}>
         <Text style={styles.comboTitle}>Combo List</Text>
-        {COMBOS.map(combo => (
+        {combos.map(combo => (
           <View key={combo.id} style={styles.comboItem}>
             {/* Left: Combo info */}
             <View style={{ flex: 1 }}>
@@ -590,17 +625,27 @@ const ProviderDetailScreen = ({ route, navigation }) => {
             <View style={styles.comboButtons}>
               <Button
                 title="Try"
-                variant="outline"
+                variant={
+                  selectedCombo?.id === combo.id ? 'secondary' : 'outline'
+                }
                 size="small"
                 style={styles.tryBtn}
-                onPress={() => {}}
+                onPress={() => setSelectedCombo(combo)}
               />
+
               <Button
                 title="Subscribe"
-                variant="secondary"
+                variant={
+                  selectedCombo?.id === combo.id ? 'outline' : 'secondary'
+                }
                 size="small"
                 style={styles.subscribeBtn}
-                onPress={() => {}}
+                onPress={() =>
+                  navigation.navigate('MenuSubscription', {
+                    provider,
+                    combo,
+                  })
+                }
               />
             </View>
           </View>
@@ -629,8 +674,7 @@ const ProviderDetailScreen = ({ route, navigation }) => {
                   addItem(meal, category, item);
                 }
               } else {
-                // Single select as before
-                addItem(meal, category, item);
+                toggleSingleItem(meal, category, item);
               }
             }}
           >
@@ -666,8 +710,8 @@ const ProviderDetailScreen = ({ route, navigation }) => {
   };
 
   const renderMeal = (label, meal) => {
-    const menu = provider.menu?.[meal];
-    if (!menu) return null;
+    const menu = provider.menu?.[meal] || {};
+    
 
     return (
       <View style={styles.mealCard}>
@@ -679,7 +723,10 @@ const ProviderDetailScreen = ({ route, navigation }) => {
           ALL_CATEGORIES.map(category => (
             <View key={category}>
               <Text style={styles.categoryTitle}>{category}</Text>
-              {menu[category]?.map(item => renderItemRow(meal, category, item))}
+              {/* {menu[category]?.map(item => renderItemRow(meal, category, item))} */}
+              {(menu[category] || []).map(item =>
+                renderItemRow(meal, category, item),
+              )}
             </View>
           ))}
 
@@ -707,6 +754,29 @@ const ProviderDetailScreen = ({ route, navigation }) => {
         {renderMeal('Lunch', 'lunch')}
         {renderMeal('Dinner', 'dinner')}
         {renderComboList()}
+
+        <View style={{ marginHorizontal: 16, marginBottom: 30 }}>
+          <Button
+            title="Place Order"
+            variant="primary"
+            size="large"
+            disabled={!hasAnyOrder() && !selectedCombo}
+            onPress={() => {
+              navigation.navigate('OrderManagement', {
+                provider,
+                combo: selectedCombo,
+                meals: {
+                  lunch: meals.lunch,
+                  dinner: meals.dinner,
+                },
+                total: {
+                  lunch: calculateMealTotal(meals.lunch),
+                  dinner: calculateMealTotal(meals.dinner),
+                },
+              });
+            }}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -765,7 +835,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   tick: {
-    color: 'colors.surface',
+    color: colors.surface,
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -837,13 +907,12 @@ const styles = StyleSheet.create({
     fontSize: fonts.size.sm,
     fontFamily: fonts.family.medium,
     width: 60,
-    marginRight:8,
-    
+    marginRight: 8,
   },
   comboButtons: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap:8,
+    gap: 8,
   },
   tryBtn: {
     borderRadius: 6,
