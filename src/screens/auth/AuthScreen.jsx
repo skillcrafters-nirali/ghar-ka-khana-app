@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '../../services/api';
-// import { setCredentials } from '../../store/authSlice';
 import {
   View,
   Text,
@@ -39,12 +38,7 @@ const AuthScreen = ({ navigation }) => {
         phone: data.phoneNumber,
       }).unwrap();
       console.log('Login Success:', result);
-      // dispatch(
-      //   setCredentials({
-      //     token: result.token,
-      //     user: result.user,
-      //   }),
-      // );
+      
 
       if (result.status) {
         navigation.navigate('Otp', {

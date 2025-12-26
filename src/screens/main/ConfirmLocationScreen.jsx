@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -22,6 +23,8 @@ import { useSelector } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 
 const ConfirmLocationScreen = ({ navigation }) => {
+  const route = useRoute();
+  const editAddress = route.params?.editAddress;
   const user = useSelector(state => state.auth.user);
   const [receiverName, setReceiverName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -59,6 +62,20 @@ const ConfirmLocationScreen = ({ navigation }) => {
     }
   }, [states]);
 
+  useEffect(() => {
+    if (editAddress) {
+      setReceiverName(editAddress.name);
+      setLandmark(editAddress.address);
+      setSelectedAddressType(editAddress.type);
+      setPincode(editAddress.pincode); 
+             
+    }
+  }, [editAddress]);
+
+  
+  
+  
+
   const token = useSelector(state => state.auth);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
@@ -69,6 +86,21 @@ const ConfirmLocationScreen = ({ navigation }) => {
   ];
 
   const handleSave = async () => {
+    if (editAddress) {
+      const updatedAddress = {
+        ...editAddress,
+        name: receiverName,
+        address: landmark,
+        type: selectedAddressType,
+        pincode,
+      };
+    
+      navigation.navigate('LocationScreen', {
+        updatedAddress,
+      });
+      return;
+    }
+    
     console.log('Form Values:', {
       receiverName,
       phoneNumber,
@@ -123,7 +155,7 @@ const ConfirmLocationScreen = ({ navigation }) => {
         rName: receiverName,
         rphone: phoneNumber,
         address: landmark,
-        type:selectedAddressType || 'Home',
+        type: selectedAddressType || 'Home',
       };
 
       if (!addressData.city || !addressData.state) {
@@ -136,7 +168,6 @@ const ConfirmLocationScreen = ({ navigation }) => {
       const result = await storeAddress(addressData).unwrap();
       console.log('API Response Success:', result);
       if (result.status) {
-
         Alert.alert('Success', result.message || 'Address saved successfully');
 
         const newAddress = {
@@ -147,7 +178,6 @@ const ConfirmLocationScreen = ({ navigation }) => {
           area: `${selectedCityId}, ${selectedStateId}`,
           isSelected: false,
         };
-        
 
         navigation.navigate('LocationScreen', { newAddress });
       }

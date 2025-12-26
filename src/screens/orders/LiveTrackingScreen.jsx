@@ -242,7 +242,6 @@ scrollContainer:{
     color: colors.textSecondary
   },
   orderDetails: {
-    // flex: 1,
     backgroundColor: colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

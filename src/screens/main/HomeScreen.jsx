@@ -1,400 +1,4 @@
-// import React, { useState, useEffect } from 'react';
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   FlatList,
-//   TouchableOpacity,
-//   TextInput,
-//   StatusBar,
-//   Image,
-// } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
-// import { colors } from '../../styles/colors';
-// import { fonts } from '../../styles/fonts';
-// import { platformStyles } from '../../styles/platform';
-// import { setGlobalLikedItems } from '../../utils/likedItems';
-// import { useGetStatesQuery } from '../../services/api';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// export const tiffinProviders = [
-//   {
-//     id: 1,
-//     name: 'Gujarati Dish',
-//     rating: 4.5,
-//     // location: 'Powai Chowk, Pune',
-//     // distance: '2km away',
-//     image:"https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg"  },
-//   {
-//     id: 2,
-//     name: 'Kathiyavadi Dish',
-//     rating: 4.8,
-//     // location: 'Satellite, Ahmedabad',
-//     // distance: '1.5km away',
-//     image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s"
-//   },
-//   {
-//     id: 3,
-//     name: 'Punjabi Dish',
-//     rating: 4.7,
-//     // location: 'Ghatlodiya,Ahmedabad',
-//     // distance: '2.5km away',
-//     image:
-//       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
-//   },
-//   {
-//     id: 4,
-//     name: 'Rajasthani Dish',
-//     rating: 4.7,
-//     // location: 'Ghatlodiya,Ahmedabad',
-//     // distance: '2.5km away',
-//     image:
-//       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
-//   },
-// ];
-
-// const HomeScreen = ({ navigation }) => {
-//   const [searchText, setSearchText] = useState('');
-//   const [liked, setLiked] = useState({});
-//   const { data: states } = useGetStatesQuery();
-
-//   useEffect(() => {
-//     console.log('States API Response in HomeScreen:', states);
-
-//   }, [states]);
-
-//   const filteredProviders = tiffinProviders.filter(provider => {
-//     const matchesSearch = provider.name
-//       .toLowerCase()
-//       .includes(searchText.toLowerCase());
-//     return matchesSearch;
-//   });
-
-//   const handleProviderPress = provider => {
-//     if (navigation) {
-//       navigation.navigate('ProviderDetail', { provider });
-//     } else {
-//       console.log('Selected provider:', provider.name);
-//     }
-//   };
-
-//   const toggleLike = id => {
-//     const newLiked = { ...liked, [id]: !liked[id] };
-//     setLiked(newLiked);
-//     setGlobalLikedItems(newLiked);
-//   };
-
-//   const renderProvider = ({ item }) => (
-//     <TouchableOpacity
-//       style={styles.providerCard}
-//       onPress={() => handleProviderPress(item)}
-//     >
-//       <View style={styles.imageContainer}>
-//         <Image source={{ uri: item.image }} style={styles.foodImage} />
-//         <TouchableOpacity
-//           style={styles.heartIcon}
-//           onPress={() => toggleLike(item.id)}
-//         >
-//           <Icon
-//             name={liked[item.id] ? 'heart' : 'heart-outline'}
-//             size={20}
-//             color={liked[item.id] ? colors.surface : colors.surface}
-//           />
-//         </TouchableOpacity>
-//       </View>
-//       <View style={styles.cardContent}>
-//         <View style={styles.titleRow}>
-//           <Text style={styles.providerName}>{item.name}</Text>
-//           <View style={styles.ratingContainer}>
-//             <Icon name="star" size={14} color={colors.warning} />
-//             <Text style={styles.ratingText}>{item.rating}</Text>
-//           </View>
-//         </View>
-//         {/* <View style={styles.bottomRow}>
-//           <Text style={styles.locationText}>{item.location}</Text>
-//           <Text style={styles.distanceText}>{item.distance}</Text>
-//         </View> */}
-//       </View>
-//     </TouchableOpacity>
-//   );
-
-//   return (
-//     <View style={styles.container}>
-//       <StatusBar
-//         barStyle="dark-content"
-//         backgroundColor="transparent"
-//         translucent
-//       />
-//       <View style={styles.header}>
-//         <View style={styles.headerTop}>
-//           <View style={styles.titleContainer}>
-//             <View style={styles.locationSection}>
-//               <TouchableOpacity
-//                 style={styles.locationIconContainer}
-//                 onPress={() => navigation.navigate('LocationScreen')}
-//               >
-//                 <Icon name="location" size={14} color={colors.primary} />
-//               </TouchableOpacity>
-
-//               <View style={styles.textSection}>
-//                 <View style={styles.titleRow}>
-//                   <Text style={styles.title}>Home</Text>
-//                   <Icon name="chevron-down" size={16} color={colors.primary} />
-//                 </View>
-//                 <TouchableOpacity
-//                   style={styles.locationContainer}
-//                   onPress={() => navigation.navigate('LocationScreen')}
-//                 >
-//                   <Text style={styles.locationText}>
-//                     {states?.data?.[0]?.stateName || 'Baner,Pune'}
-//                   </Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-//           </View>
-
-//           <View style={styles.rightIcons}>
-//             {/* <TouchableOpacity
-//               style={styles.calendarIcon}
-//               onPress={() => navigation.navigate('TrackPlan')}
-//             >
-//               <View style={styles.calendarIconContainer}>
-//                 <Icon
-//                   name="calendar-outline"
-//                   size={20}
-//                   color={colors.primary}
-//                 />
-//               </View>
-//             </TouchableOpacity> */}
-
-//             <TouchableOpacity style={styles.notificationIcon}>
-//               <View style={styles.notificationIconContainer}>
-//                 <Icon
-//                   name="notifications-outline"
-//                   size={20}
-//                   color={colors.primary}
-//                 />
-//               </View>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-
-//         <View style={styles.searchContainer}>
-//           <Icon
-//             name="search"
-//             size={20}
-//             color={colors.primary}
-//             style={styles.searchIcon}
-//           />
-//           <TextInput
-//             style={styles.searchInput}
-//             placeholder="Search your favorite Dabbawala"
-//             value={searchText}
-//             onChangeText={setSearchText}
-//             placeholderTextColor={colors.textSecondary}
-//           />
-//           <Icon
-//             name="mic"
-//             size={20}
-//             color={colors.primary}
-//             style={styles.micIcon}
-//           />
-//         </View>
-//       </View>
-
-//       <FlatList
-//         data={filteredProviders}
-//         renderItem={renderProvider}
-//         keyExtractor={item => item.id.toString()}
-//         style={styles.list}
-//         contentContainerStyle={styles.listContent}
-//         showsVerticalScrollIndicator={false}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: colors.background,
-//     paddingTop: 50,
-//   },
-//   header: {
-//     paddingHorizontal: 20,
-//     paddingVertical: 15,
-//   },
-//   headerTop: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginBottom: 20,
-//   },
-//   titleContainer: {
-//     flex: 1,
-//   },
-//   locationSection: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   textSection: {
-//     marginLeft: 8,
-//   },
-//   titleRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     marginBottom: 2,
-//   },
-//   title: {
-//     fontSize: fonts.size.xl,
-//     fontFamily: fonts.family.bold,
-//     color: colors.textPrimary,
-//     marginRight: 8,
-//   },
-//   locationContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   locationIconContainer: {
-//     backgroundColor: colors.successLight,
-//     borderRadius: 12,
-//     padding: 6,
-//     marginRight: 8,
-//   },
-//   locationText: {
-//     fontSize: fonts.size.sm,
-//     fontFamily: fonts.family.regular,
-//     color: colors.textSecondary,
-//     marginRight: 6,
-//   },
-//   rightIcons: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   // calendarIcon: {
-//   //   padding: 4,
-//   //   marginRight: 8,
-//   // },
-//   // calendarIconContainer: {
-//   //   backgroundColor: colors.successLight,
-//   //   borderRadius: 20,
-//   //   padding: 8,
-//   // },
-
-//   notificationIcon: {
-//     padding: 4,
-//   },
-//   notificationIconContainer: {
-//     backgroundColor: colors.successLight,
-//     borderRadius: 20,
-//     padding: 8,
-//   },
-//   userIcon: {
-//     padding: 4,
-//   },
-//   searchContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     borderWidth: 1,
-//     borderColor: colors.border,
-//     borderRadius: 25,
-//     paddingHorizontal: 16,
-//     paddingVertical: 12,
-//     marginBottom: 16,
-//     backgroundColor: colors.surface,
-//   },
-//   searchIcon: {
-//     marginRight: 10,
-//   },
-//   searchInput: {
-//     flex: 1,
-//     fontSize: fonts.size.md,
-//     fontFamily: fonts.family.regular,
-//     color: colors.textPrimary,
-//     includeFontPadding: false,
-//     textAlignVertical: 'center',
-//   },
-//   micIcon: {
-//     marginLeft: 10,
-//   },
-
-//   list: {
-//     flex: 1,
-//     paddingHorizontal: 20,
-//   },
-//   listContent: {
-//     paddingBottom: 100,
-//   },
-
-//   providerCard: {
-//     backgroundColor: colors.surface,
-//     borderRadius: 12,
-//     marginBottom: 16,
-//     overflow: 'hidden',
-//     ...platformStyles.shadow,
-//   },
-//   imageContainer: {
-//     position: 'relative',
-//   },
-//   heartIcon: {
-//     position: 'absolute',
-//     top: 12,
-//     right: 12,
-//     // backgroundColor: 'rgba(0,0,0,0.3)',
-//     // borderRadius: 20,
-//     padding: 8,
-//   },
-
-//   foodImage: {
-//     width: '100%',
-//     height: 150,
-//     resizeMode: 'cover',
-//   },
-//   cardContent: {
-//     padding: 16,
-//   },
-//   titleRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginBottom: 4,
-//   },
-//   bottomRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//   },
-//   providerName: {
-//     fontSize: fonts.size.lg,
-//     fontFamily: fonts.family.bold,
-//     color: colors.textPrimary,
-//     flex: 1,
-//   },
-//   locationText: {
-//     fontSize: fonts.size.sm,
-//     fontFamily: fonts.family.regular,
-//     color: colors.textSecondary,
-//     flex: 1,
-//   },
-//   ratingContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   ratingText: {
-//     fontSize: fonts.size.sm,
-//     fontFamily: fonts.family.regular,
-//     color: colors.textSecondary,
-//     marginLeft: 4,
-//   },
-//   distanceText: {
-//     fontSize: fonts.size.sm,
-//     fontFamily: fonts.family.regular,
-//     color: colors.textSecondary,
-//   },
-// });
-
-// export default HomeScreen;
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -412,7 +16,7 @@ import { fonts } from '../../styles/fonts';
 import { platformStyles } from '../../styles/platform';
 import { setGlobalLikedItems } from '../../utils/likedItems';
 import { useGetStatesQuery } from '../../services/api';
-
+import {requestLocationPermission} from '../../utils/locationPermission';
 export const tiffinProviders = [
   // Gujarati Restaurants
   {
@@ -422,7 +26,8 @@ export const tiffinProviders = [
     description: 'Authentic Gujarati home-style meals',
     price: '₹120 / meal',
     category: 'Gujarati',
-    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image:
+      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
     menu: {
       lunch: {
         Subji: [
@@ -433,50 +38,39 @@ export const tiffinProviders = [
           { id: 3, name: 'Chapati', price: 10 },
           { id: 4, name: 'Thepla', price: 15 },
         ],
-        Dal: [
-          { id: 5, name: 'Dal Fry', price: 30 },
-        ],
-        Rice: [
-          { id: 6, name: 'Plain Rice', price: 20 },
-        ],
-        Papad: [
-          { id: 7, name: 'Roasted Papad', price: 10 },
-        ],
+        Dal: [{ id: 5, name: 'Dal Fry', price: 30 }],
+        Rice: [{ id: 6, name: 'Plain Rice', price: 20 }],
+        Papad: [{ id: 7, name: 'Roasted Papad', price: 10 }],
       },
-    
+
       dinner: {
-        Subji: [
-          { id: 8, name: 'Paneer Bhurji', price: 60 },
-        ],
-        Roti: [
-          { id: 9, name: 'Butter Roti', price: 15 },
-        ],
-        Dal: [
-          { id: 5, name: 'Dal Fry', price: 30 },
-        ],
-        Rice: [
-          { id: 6, name: 'Plain Rice', price: 20 },
-        ],
-        Papad: [
-          { id: 7, name: 'Roasted Papad', price: 10 },
-        ],
+        Subji: [{ id: 8, name: 'Paneer Bhurji', price: 60 }],
+        Roti: [{ id: 9, name: 'Butter Roti', price: 15 }],
+        Dal: [{ id: 5, name: 'Dal Fry', price: 30 }],
+        Rice: [{ id: 6, name: 'Plain Rice', price: 20 }],
+        Papad: [{ id: 7, name: 'Roasted Papad', price: 10 }],
       },
     },
 
-     COMBOS : [
+    COMBOS: [
       {
         id: 'combo1',
         name: '1 Sabji + 4 Roti + salad',
         price: 110,
       },
       { id: 'combo2', name: '1 sabji + 4 Roti + Rice + Daal', price: 170 },
-      
-      { id: 'combo3', name: '1 Green sabji + 1 kathol sabji + 1 sweet + salad + rice + daal + 3 roti', price: 210 },
-      { id: 'combo4', name: '2 sabji + 5 roti + 1 sweet + salad + rice daal + Bhajiya/farshan + chas ', price: 300 },
-    
+
+      {
+        id: 'combo3',
+        name: '1 Green sabji + 1 kathol sabji + 1 sweet + salad + rice + daal + 3 roti',
+        price: 210,
+      },
+      {
+        id: 'combo4',
+        name: '2 sabji + 5 roti + 1 sweet + salad + rice daal + Bhajiya/farshan + chas ',
+        price: 300,
+      },
     ],
-    
-    
   },
   {
     id: 2,
@@ -485,7 +79,8 @@ export const tiffinProviders = [
     description: 'Traditional Gujarati thali meals',
     price: '₹110 / meal',
     category: 'Gujarati',
-    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image:
+      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
   },
   {
     id: 3,
@@ -494,7 +89,8 @@ export const tiffinProviders = [
     description: 'Homely Gujarati delicacies',
     price: '₹130 / meal',
     category: 'Gujarati',
-    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image:
+      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
   },
   {
     id: 4,
@@ -503,7 +99,8 @@ export const tiffinProviders = [
     description: 'Authentic Gujarati cuisine',
     price: '₹125 / meal',
     category: 'Gujarati',
-    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image:
+      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
   },
   {
     id: 5,
@@ -512,7 +109,8 @@ export const tiffinProviders = [
     description: 'Traditional Gujarati home meals',
     price: '₹115 / meal',
     category: 'Gujarati',
-    image: 'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
+    image:
+      'https://assets.cntraveller.in/photos/67c7f6ab13fb2f873dad3ac2/master/w_1600%2Cc_limit/SGS04356.jpg',
   },
 
   // Punjabi Restaurants
@@ -523,7 +121,8 @@ export const tiffinProviders = [
     description: 'Rich Punjabi home-style thali meals',
     price: '₹180 / meal',
     category: 'Punjabi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
   {
     id: 7,
@@ -532,7 +131,8 @@ export const tiffinProviders = [
     description: 'Authentic Punjabi tandoori dishes',
     price: '₹190 / meal',
     category: 'Punjabi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
   {
     id: 8,
@@ -541,7 +141,8 @@ export const tiffinProviders = [
     description: 'Traditional Punjabi meals with spices',
     price: '₹185 / meal',
     category: 'Punjabi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
   {
     id: 9,
@@ -550,7 +151,8 @@ export const tiffinProviders = [
     description: 'Authentic Punjabi cuisine',
     price: '₹175 / meal',
     category: 'Punjabi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
   {
     id: 10,
@@ -559,7 +161,8 @@ export const tiffinProviders = [
     description: 'Rich Punjabi thali meals',
     price: '₹200 / meal',
     category: 'Punjabi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7GEM9v8H1dftlGaYY2Duz_r-_bkjlyKEyA&s',
   },
 
   // Kathiyavadi Restaurants
@@ -570,7 +173,8 @@ export const tiffinProviders = [
     description: 'Traditional Kathiyavadi spicy home meals',
     price: '₹140 / meal',
     category: 'Kathiyavadi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
   },
   {
     id: 12,
@@ -579,7 +183,8 @@ export const tiffinProviders = [
     description: 'Authentic Kathiyavadi cuisine',
     price: '₹150 / meal',
     category: 'Kathiyavadi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
   },
   {
     id: 13,
@@ -588,7 +193,8 @@ export const tiffinProviders = [
     description: 'Traditional Kathiyavadi meals',
     price: '₹145 / meal',
     category: 'Kathiyavadi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
   },
   {
     id: 14,
@@ -597,7 +203,8 @@ export const tiffinProviders = [
     description: 'Spicy Kathiyavadi delicacies',
     price: '₹150 / meal',
     category: 'Kathiyavadi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
   },
   {
     id: 15,
@@ -606,7 +213,8 @@ export const tiffinProviders = [
     description: 'Authentic home-style Kathiyavadi meals',
     price: '₹140 / meal',
     category: 'Kathiyavadi',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB4diuU7XrrWoXx9dFk9aUAlBSaETQ1fGqcg&s',
   },
 
   // Rajasthani Restaurants
@@ -617,7 +225,8 @@ export const tiffinProviders = [
     description: 'Authentic Rajasthani traditional meals',
     price: '₹160 / meal',
     category: 'Rajasthani',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
   {
     id: 17,
@@ -626,7 +235,8 @@ export const tiffinProviders = [
     description: 'Royal Rajasthani meals with authentic flavors',
     price: '₹170 / meal',
     category: 'Rajasthani',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
   {
     id: 18,
@@ -635,7 +245,8 @@ export const tiffinProviders = [
     description: 'Traditional Rajasthani thali meals',
     price: '₹165 / meal',
     category: 'Rajasthani',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
   {
     id: 19,
@@ -644,7 +255,8 @@ export const tiffinProviders = [
     description: 'Authentic Marwari cuisine',
     price: '₹160 / meal',
     category: 'Rajasthani',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
   {
     id: 20,
@@ -653,10 +265,10 @@ export const tiffinProviders = [
     description: 'Rajasthani traditional meals with spices',
     price: '₹170 / meal',
     category: 'Rajasthani',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgD1NKl2LY9qMDmFZYQGGre33SOVazxXyU-g&s',
   },
 ];
-
 
 const filters = [
   {
@@ -685,8 +297,6 @@ const filters = [
   },
 ];
 
-
-
 const HomeScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [liked, setLiked] = useState({});
@@ -710,6 +320,9 @@ const HomeScreen = ({ navigation }) => {
     setGlobalLikedItems(newLiked);
   };
 
+  
+  
+
   const renderProvider = ({ item }) => (
     <TouchableOpacity
       style={styles.kitchenCard}
@@ -728,6 +341,7 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.heartIcon}
           onPress={() => toggleLike(item.id)}
+
         >
           <Icon
             name={liked[item.id] ? 'heart' : 'heart-outline'}
@@ -752,6 +366,16 @@ const HomeScreen = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   );
+
+  useEffect(() => {
+    const askPermission = async () => {
+      const granted = await requestLocationPermission();
+      console.log('Location permission:', granted);
+    };
+  
+    askPermission();
+  }, []);
+ 
 
   return (
     <View style={styles.container}>
@@ -806,8 +430,7 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: 20 }}
         ListHeaderComponent={
           <>
-          <OfferSlider />
-            
+            <OfferSlider />
 
             {/* POPULAR FILTER */}
             <Text style={styles.sectionTitle}>Popular Filter</Text>
@@ -825,7 +448,7 @@ const HomeScreen = ({ navigation }) => {
                     navigation.navigate('CategoryScreen', {
                       category: item.title.split(' ')[0],
                       dishImage: item.image,
-                      dishTitle: item.title, 
+                      dishTitle: item.title,
                     })
                   }
                 >

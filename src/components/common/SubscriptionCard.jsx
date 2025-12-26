@@ -1,65 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet,Dimensions} from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from './Button';
 
 const SubscriptionCard = ({ plan, onBuyPress }) => {
   const isVeg = plan.type === 'Vegetarian Plan';
-  
+
   return (
     <View style={styles.card}>
       <Text style={styles.planTitle}>{plan.title}</Text>
       {/* COMBO NAME (ADD HERE) */}
-      {plan.comboName && (
-        <Text style={styles.comboName}>{plan.comboName}</Text>
-      )}
+      {plan.comboName && <Text style={styles.comboName}>{plan.comboName}</Text>}
 
       {/* PRICE */}
       <Text style={styles.price}>₹{plan.price}</Text>
 
       {/* PRICE LABEL (DISCOUNT / FREE) */}
-      {plan.priceLabel && (
-        <Text style={styles.benefit}>{plan.priceLabel}</Text>
-      )}
-      
-      {/* <View style={styles.planTypeContainer}>
-        <View style={[styles.dot, { backgroundColor: isVeg ? colors.secondary : colors.error }]} />
-        <Text style={styles.planType}>{plan.type}</Text>
-      </View> */}
-      
-      {/* <Text style={styles.price}>{plan.price}</Text> */}
-      {/* <Text style={styles.description}>{plan.description}</Text> */}
-      
-      {/* <View style={styles.itemsContainer}>
-        {plan.itemsIncluded?.map(item => (
-          <Text key={item} style={styles.itemText}>
-            • {item}
-          </Text>
-        ))}
-      </View> */}
-      
-      <View style={styles.bottomRow}>
-      <Button
-       title="Buy"
-       onPress={() => onBuyPress(plan)}
-       variant="buy"
-       size="buySize"
-/>
+      {plan.priceLabel && <Text style={styles.benefit}>{plan.priceLabel}</Text>}
 
+      <View style={styles.bottomRow}>
+        <Button
+          title="Buy"
+          onPress={() => onBuyPress(plan)}
+          variant="buy"
+          size="buySize"
+        />
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  
   card: {
     backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
-    // marginRight: 12,
-    // width: 280,   
+
     width: Dimensions.get('window').width - 32,
 
     borderWidth: 1,
@@ -70,7 +47,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  
+
   planTitle: {
     fontSize: fonts.size.md,
     fontFamily: fonts.family.bold,
@@ -84,23 +61,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  price: {
-    marginTop: 8,
-    fontSize: fonts.size.lg,
-    fontFamily: fonts.family.bold,
-    color: colors.primary,
-  },
-
   benefit: {
     marginTop: 4,
     fontSize: fonts.size.sm,
     color: 'green',
   },
-  planTypeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
+
   dot: {
     width: 8,
     height: 8,
@@ -118,21 +84,11 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginBottom: 8,
   },
-  description: {
-    fontSize: fonts.size.xs,
-    fontFamily: fonts.family.regular,
-    color: colors.textSecondary,
-    lineHeight: 16,
-    marginBottom: 16,
-  },
-  itemsContainer: {
-    marginBottom: 12,
-  },
+
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  
 });
 
 export default SubscriptionCard;

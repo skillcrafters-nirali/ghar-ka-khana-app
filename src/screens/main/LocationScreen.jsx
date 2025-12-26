@@ -5,8 +5,10 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Pressable,
   TextInput,
   StatusBar,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
@@ -24,6 +26,7 @@ const LocationScreen = ({ navigation, route }) => {
   const [searchText, setSearchText] = useState('');
   const [addresses, setAddresses] = useState([]);
   const [selectedStateId, setSelectedStateId] = useState(null);
+  const [menuVisibleId, setMenuVisibleId] = useState(null);
 
   const [getCities, { data: cities, isLoading: citiesLoading }] =
     useGetCitiesMutation();
@@ -76,6 +79,18 @@ const LocationScreen = ({ navigation, route }) => {
   }, [route.params?.newAddress]);
 
   useEffect(() => {
+    if (route.params?.updatedAddress) {
+      setAddresses(prev =>
+        prev.map(addr =>
+          addr.id === route.params.updatedAddress.id
+            ? route.params.updatedAddress
+            : addr,
+        ),
+      );
+    }
+  }, [route.params?.updatedAddress]);
+
+  useEffect(() => {
     console.log('userAddresses:', userAddresses);
     console.log('states:', states);
     console.log('cities:', cities);
@@ -89,7 +104,7 @@ const LocationScreen = ({ navigation, route }) => {
 
         return {
           id: addr.id,
-          type: addr.type||'Home',
+          type: addr.type || 'Home',
           name: addr.rName || addr.name || 'No Name',
           address: addr.address,
           area: `${addr['cityData.cityName']}, ${addr['stateData.stateName']} - ${addr.pincode}`,
@@ -131,8 +146,32 @@ const LocationScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleEdit = address => {
+    setMenuVisibleId(null);
+    navigation.navigate('ConfirmLocation', {
+      editAddress: address,
+    });
+  };
+
+  const handleDelete = id => {
+    Alert.alert(
+      'Delete Address',
+      'Are you sure you want to delete this address?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setAddresses(prev => prev.filter(addr => addr.id !== id));
+          },
+        },
+      ],
+    );
+  };
+
   const renderAddress = ({ item }) => (
-    <TouchableOpacity
+    <Pressable
       style={[styles.addressCard, item.isSelected && styles.selectedCard]}
       onPress={() => handleAddressSelect(item.id)}
     >
@@ -152,15 +191,41 @@ const LocationScreen = ({ navigation, route }) => {
             <Text style={styles.addressArea}>{item.area}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.moreButton}>
-          <Icon
-            name="ellipsis-vertical"
-            size={20}
-            color={colors.textSecondary}
-          />
-        </TouchableOpacity>
+
+        <View style={{ position: 'relative' }}>
+          <TouchableOpacity
+            style={styles.moreButton}
+            onPress={() =>
+              setMenuVisibleId(menuVisibleId === item.id ? null : item.id)
+            }
+          >
+            <Icon
+              name="ellipsis-horizontal"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          {menuVisibleId === item.id && (
+            <View style={styles.menu}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => handleEdit(item)}
+              >
+                <Text style={styles.menuText}>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => handleDelete(item.id)}
+              >
+                <Text style={[styles.menuText, { color: 'red' }]}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const filteredAddresses = addresses.filter(addr =>
@@ -352,6 +417,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
+    overflow: 'visible',
   },
   selectedCard: {
     backgroundColor: colors.successLight,
@@ -405,6 +471,29 @@ const styles = StyleSheet.create({
   },
   moreButton: {
     padding: 4,
+  },
+  menu: {
+    position: 'absolute',
+    right: 0,
+
+    top: 28,
+
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+
+    zIndex: 9999,
+    elevation: 10,
+    minWidth: 120,
+  },
+  menuItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  menuText: {
+    fontSize: fonts.size.sm,
+    color: colors.textPrimary,
   },
 });
 

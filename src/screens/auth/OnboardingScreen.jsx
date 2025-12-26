@@ -88,14 +88,12 @@ const OnboardingScreen = ({ navigation }) => {
   };
 
   const renderSplashScreen = () => (
-    
     <LinearGradient
       colors={[colors.gradientDark, colors.gradientMid, colors.gradientLight]}
       start={{ x: 0.5, y: 0 }}
       end={{ x: 0.5, y: 1 }}
       style={styles.splashContainer}
     >
-      
       <View style={styles.splashContent}>
         <Text style={styles.wheatIcon}>🌾</Text>
         <Text style={styles.splashTitle}>GHAR KA KHANA</Text>
@@ -188,18 +186,12 @@ const OnboardingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-   {/* <StatusBar 
-      barStyle="dark-content" 
-      backgroundColor={colors.background} 
-      hidden={currentIndex === 0}
-    /> */}
-
-<StatusBar 
-  barStyle={currentIndex === 0 ? "light-content" : "dark-content"}
-  backgroundColor={currentIndex === 0 ? 'transparent' : colors.background}
-  translucent={currentIndex === 0}
-  hidden={currentIndex === 0}
-/>
+      <StatusBar
+        barStyle={currentIndex === 0 ? 'light-content' : 'dark-content'}
+        backgroundColor={currentIndex === 0 ? 'transparent' : colors.background}
+        translucent={currentIndex === 0}
+        hidden={currentIndex === 0}
+      />
 
       <ScrollView
         ref={scrollViewRef}
@@ -229,8 +221,8 @@ const styles = StyleSheet.create({
   },
   screenContainer: {
     width: width,
-    // height: height,
-    flex:1,
+
+    flex: 1,
   },
   // Splash Screen Styles
   splashContainer: {
@@ -282,7 +274,7 @@ const styles = StyleSheet.create({
   },
   borderWrapperLarge: {
     flex: 0.85,
-    // flex:0.3,
+
     backgroundColor: colors.textSecondary,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,

@@ -1,84 +1,3 @@
-// import React from 'react';
-// import { View, TouchableOpacity, StyleSheet } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
-// import { colors } from '../../styles/colors';
-
-// const TAB_ICONS = {
-//   Home: 'home-outline',
-//   Cart: 'bag-outline',
-//   Favorite: 'heart-outline',
-//   Profile: 'person-outline',
-// };
-
-// export default function CurvedBottomNav({ state, navigation }) {
-//   const activeIndex = state.index;
-
-//   return (
-//     <View style={styles.container}>
-
-//       {/* Tabs */}
-//       <View style={styles.row}>
-//         {state.routes.map((route, index) => {
-//           const isActive = index === activeIndex;
-
-//           return (
-//             <TouchableOpacity
-//               key={route.key}
-//               onPress={() => navigation.navigate(route.name)}
-//               style={[styles.iconWrapper, isActive && styles.active]}
-//             >
-//               <Icon
-//                 name={TAB_ICONS[route.name]}
-//                 size={22}
-//                 color={isActive ? colors.primary : colors.textPrimary}
-
-//               />
-//             </TouchableOpacity>
-//           );
-//         })}
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     height: 80,
-//     position: 'absolute',
-//     bottom: 0,
-//     width: '100%',
-//     borderRadius:20,
-//     alignItems: 'center',
-//     backgroundColor:colors.surface,
-//     elevation: 8,
-//     shadowColor: colors.shadow,
-//     shadowOffset: { width: 0, height: -2 },
-//     shadowOpacity: 0.1,
-//     shadowRadius:8,
-//   },
-
-//   row: {
-//     position: 'absolute',
-//     bottom: 22,
-//     width: '80%',
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//   },
-//   iconWrapper: {
-//     padding: 12,
-//   },
-//   active: {
-//     backgroundColor: colors.tertiary,
-//     padding: 16,
-//     borderRadius: 50,
-//     elevation: 15,
-//     shadowColor: colors.primary,
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 6,
-//   },
-// });
-
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -215,3 +134,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
 });
+
+
+

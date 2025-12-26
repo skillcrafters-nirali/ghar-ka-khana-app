@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
@@ -8,7 +16,7 @@ import { getGlobalLikedItems } from '../../utils/likedItems';
 import { tiffinProviders } from './HomeScreen';
 
 const FavoriteAllScreen = ({ route, navigation }) => {
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [likedItems, setLikedItems] = useState([]);
 
   useEffect(() => {
@@ -17,7 +25,9 @@ const FavoriteAllScreen = ({ route, navigation }) => {
       if (globalLiked && typeof globalLiked === 'object') {
         const filteredLikedItems = Object.keys(globalLiked)
           .filter(id => globalLiked[id])
-          .map(id => tiffinProviders.find(provider => provider.id.toString() === id))
+          .map(id =>
+            tiffinProviders.find(provider => provider.id.toString() === id),
+          )
           .filter(Boolean);
         setLikedItems(filteredLikedItems);
       } else {
@@ -27,12 +37,19 @@ const FavoriteAllScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const filteredLikedItems = likedItems.filter(item => 
-    item.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredLikedItems = likedItems.filter(item =>
+    item.name.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const renderProvider = ({ item }) => (
-    <TouchableOpacity style={styles.providerCard}>
+    <TouchableOpacity style={styles.providerCard}
+    onPress={() =>
+      navigation.navigate('ProviderDetail', {
+        provider: item,
+      })
+    }
+  
+    >
       <View style={styles.imageContainer}>
         <Image source={{ uri: item.image }} style={styles.foodImage} />
         <TouchableOpacity style={styles.heartIcon}>
@@ -47,6 +64,14 @@ const FavoriteAllScreen = ({ route, navigation }) => {
             <Text style={styles.ratingText}>{item.rating}</Text>
           </View>
         </View>
+        {!!item.description && (
+          <Text style={styles.descriptionText} numberOfLines={2}>
+            {item.description}
+          </Text>
+        )}
+
+        {!!item.price && <Text style={styles.priceText}>{item.price}</Text>}
+
         <View style={styles.bottomRow}>
           <Text style={styles.locationText}>{item.location}</Text>
           <Text style={styles.distanceText}>{item.distance}</Text>
@@ -58,7 +83,7 @@ const FavoriteAllScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Fav Dabbas</Text>
-      
+
       <View style={styles.searchContainer}>
         <Icon
           name="search"
@@ -103,7 +128,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family.bold,
     color: colors.textPrimary,
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -154,6 +179,20 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 16,
   },
+  descriptionText: {
+    fontSize: fonts.size.sm,
+    color: colors.textSecondary,
+    marginTop: 6,
+    lineHeight: 18,
+  },
+
+  priceText: {
+    fontSize: fonts.size.sm,
+    fontFamily: fonts.family.bold,
+    color: colors.primary,
+    marginTop: 6,
+  },
+
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

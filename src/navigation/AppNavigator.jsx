@@ -18,14 +18,12 @@ import FavoriteAllScreen from '../screens/main/FavoriteAllScreen';
 import CategoryScreen from '../screens/main/CategoryScreen';
 
 // Order Screens
-import CartScreen from '../screens/orders/CartScreen';
 import LiveTrackingScreen from '../screens/orders/LiveTrackingScreen';
 import TrackPlanScreen from '../screens/orders/TrackPlanScreen';
 import OrderManagementScreen from '../screens/orders/OrderManagementScreen';
 import PaymentScreen from '../screens/orders/PaymentScreen';
 import OrderConfirmationScreen from '../screens/orders/OrderConfirmationScreen';
 import OrderHistoryScreen from '../screens/orders/OrderHistoryScreen';
-import SubscriptionManagementScreen from '../screens/orders/SubscriptionManagementScreen';
 import RatingsReviewsScreen from '../screens/orders/RatingsReviewsScreen';
 
 const Stack = createStackNavigator();
@@ -57,12 +55,10 @@ const AppNavigator = () => {
       {/* Order Stack */}
       <Stack.Screen name="Plan" component={TrackPlanScreen} />
       <Stack.Screen name="LiveTracking" component={LiveTrackingScreen} />
-      <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="OrderManagement" component={OrderManagementScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
       <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
-      <Stack.Screen name="SubscriptionManagement" component={SubscriptionManagementScreen} />
       <Stack.Screen name="RatingsReviews" component={RatingsReviewsScreen} />
     </Stack.Navigator>
   );
