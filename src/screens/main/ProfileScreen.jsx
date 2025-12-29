@@ -26,21 +26,24 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const profileMenuItems = [
-    { icon: 'person-outline', title: 'Your Profile' },
+    { icon: 'person-outline', title: 'Your Profile',
+     onPress:() => navigation.navigate('EditProfile'),
+  },
     {
       icon: 'receipt-outline',
       title: 'Your Orders',
       onPress: () => navigation.navigate('OrderHistory'),
     },
-    { icon: 'book-outline', title: 'Address Book' },
+    { icon: 'book-outline', title: 'Saved Address',
+    onPress: () => navigation.navigate('SavedAddress'), 
+},
   ];
 
   const moreMenuItems = [
     { icon: 'help-circle-outline', title: 'Online Help Portal' },
-    { icon: 'language-outline', title: 'Change Language' },
     { icon: 'information-circle-outline', title: 'About' },
     { icon: 'chatbubble-outline', title: 'Send Feedback' },
-    { icon: 'shield-outline', title: 'Report A Safety Emergency' },
+    
   ];
 
   return (

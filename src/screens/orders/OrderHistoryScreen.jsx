@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,25 +11,18 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from '../../components/common/Button';
+import { tiffinProviders } from '../main/HomeScreen';
 
 const OrderHistoryScreen = ({ navigation }) => {
-  const [orders] = useState([
-    {
-      id: 'GKK12345',
-      provider: 'Mama Kitchen',
-      items: ['Dal Rice Combo', 'Roti with Sabzi'],
-      date: '10 Jan 2024, 11:50',
-      image: 'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg',
-    },
-    {
-      id: 'GKK12344',
-      provider: 'Ghar Jaisa',
-      items: ['Rajma Chawal', 'Mixed Veg'],
-      date: '08 Jan 2024, 09:54',
-      image:
-        'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg',
-    },
-  ]);
+  
+  const orders = tiffinProviders.slice(0, 2).map((provider, index) => ({
+    id: `ORD-${1000 + index}`,
+    provider: provider.name,
+    combo: provider.COMBOS?.[0], // ✅ FULL COMBO OBJECT
+    date: '10 Jan 2024',
+    image: provider.image,
+  }));
+  
 
   return (
     <View style={styles.container}>
@@ -41,45 +34,45 @@ const OrderHistoryScreen = ({ navigation }) => {
         <Text style={styles.headerTitle}>My Orders</Text>
       </View>
 
-      {/* Tabs */}
-      <View style={styles.tabs}>
-        <View style={styles.tabInactive}>
-          <Text style={styles.tabTextInactive}>Upcoming</Text>
-        </View>
-        <View style={styles.tabActive}>
-          <Text style={styles.tabTextActive}>History</Text>
-        </View>
-      </View>
-
       {/* Orders */}
       <ScrollView contentContainerStyle={styles.list}>
         {orders.map(order => (
           <View key={order.id} style={styles.card}>
-            {/* Image */}
-            <Image source={{ uri: order.image }} style={styles.image} />
-
-            {/* Content */}
+            {/* Left Image */}
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{ uri: order.image }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            </View>
+            {/* Right side */}
             <View style={styles.content}>
+              <Text style={styles.date}>{order.date}</Text>
+
               <View style={styles.topRow}>
                 <Text style={styles.provider}>{order.provider}</Text>
-                <Text style={styles.date}>{order.date}</Text>
               </View>
 
-              <Text style={styles.items}>{order.items.join(', ')}</Text>
+              {/* <Text style={styles.items}>{order.items.join(', ')}</Text> */}
+              <Text style={styles.items}>{order.combo?.name}</Text>
+
 
               <View style={styles.bottomRow}>
-                <Button
-                  title="Rate"
-                  variant="outline"
-                  size="small"
-                  style={styles.rateBtn}
-                />
-
+                <Button title="Rate" variant="outline" size="small" />
                 <Button
                   title="Re-order"
                   variant="primary"
                   size="small"
-                  style={styles.reorderBtn}
+                  style={{ marginLeft: 10 }}
+                  // onPress={() => navigation.navigate('OrderManagement')}
+                  onPress={() =>
+                    navigation.navigate('OrderManagement', {
+                      combo: order.combo, // ✅ NOW IT EXISTS
+
+                    })
+                  }
+                  
                 />
               </View>
             </View>
@@ -110,41 +103,6 @@ const styles = StyleSheet.create({
     marginRight: 24,
   },
 
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: 'colors.primary',
-    marginHorizontal: 20,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  tabInactive: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    backgroundColor: colors.surface,
-  },
-  tabActive: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    alignItems: 'center',
-    paddingVertical: 14,
-  },
-  tabTextInactive: {
-    fontFamily: fonts.family.medium,
-    fontSize: fonts.size.md,
-    color: colors.primary,
-  },
-  tabTextActive: {
-    fontFamily: fonts.family.medium,
-    fontSize: fonts.size.md,
-    color: colors.surface,
-  },
-
   list: {
     padding: 20,
   },
@@ -154,22 +112,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 22,
     marginBottom: 20,
-    padding: 16,
+    padding: 12,
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
   },
+  imageWrapper: {
+    justifyContent: 'center',
+  },
 
   image: {
-    width: 95,
-    height: 95,
-    borderRadius: 16,
+    width: 110,
+    height: 120,
+    borderRadius: 12,
   },
 
   content: {
     flex: 1,
-    marginLeft: 14,
+    marginLeft: 18,
   },
 
   topRow: {
@@ -183,6 +144,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: fonts.size.xs,
     color: colors.textSecondary,
+    textAlign: 'right',
   },
 
   items: {
@@ -200,11 +162,11 @@ const styles = StyleSheet.create({
 
   rateBtn: {
     marginRight: 10,
-    minWidth:90,
+    minWidth: 90,
   },
   reorderBtn: {
     borderRadius: 10,
-    minWidth:110,
+    minWidth: 110,
   },
 });
 

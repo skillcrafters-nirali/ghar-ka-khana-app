@@ -106,7 +106,13 @@ const LocationScreen = ({ navigation, route }) => {
           id: addr.id,
           type: addr.type || 'Home',
           name: addr.rName || addr.name || 'No Name',
+          phoneNumber: addr.rphone || '',
           address: addr.address,
+          pincode: addr.pincode || '',
+          stateId: addr.state || addr.stateId,
+          cityId: addr.city || addr.cityId,
+      
+          // for UI
           area: `${addr['cityData.cityName']}, ${addr['stateData.stateName']} - ${addr.pincode}`,
           isSelected: false,
         };

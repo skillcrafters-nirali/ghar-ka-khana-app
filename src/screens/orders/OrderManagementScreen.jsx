@@ -12,11 +12,14 @@ import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 
 const OrderManagementScreen = ({ navigation, route }) => {
+  
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
-
+ 
   // 🔹 READ PARAMS
   const { combo, meals, plan } = route.params || {};
+  
+
 
   /* ---------------- BUILD ORDER ITEMS ---------------- */
 
@@ -73,6 +76,9 @@ const OrderManagementScreen = ({ navigation, route }) => {
 
     return items;
   };
+ 
+  
+  
 
   const orderItems = buildOrderItems();
 
@@ -214,7 +220,7 @@ export default OrderManagementScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
   },
   header: {
     flexDirection: 'row',

@@ -15,8 +15,9 @@ import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import { platformStyles } from '../../styles/platform';
 import { setGlobalLikedItems } from '../../utils/likedItems';
-import { useGetStatesQuery } from '../../services/api';
-import {requestLocationPermission} from '../../utils/locationPermission';
+// import { useGetStatesQuery } from '../../services/api';
+import { useGetUserAddressesQuery } from '../../services/api';
+import { requestLocationPermission } from '../../utils/locationPermission';
 export const tiffinProviders = [
   // Gujarati Restaurants
   {
@@ -300,7 +301,30 @@ const filters = [
 const HomeScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [liked, setLiked] = useState({});
-  const { data: states } = useGetStatesQuery();
+  // const { data: states } = useGetStatesQuery();
+  const { data: addressResponse } = useGetUserAddressesQuery();
+
+  const selectedAddress =
+    addressResponse?.data?.find(addr => addr.isSelected) ||
+    addressResponse?.data?.[0];
+
+  const getFullAddress = addr => {
+    if (!addr) return 'Select delivery location';
+
+    const city = addr['cityData.cityName'] || addr.cityName || '';
+
+    const state = addr['stateData.stateName'] || addr.stateName || '';
+
+    const pincode = addr.pincode || '';
+
+    const parts = [
+      addr.address,
+      city && state ? `${city}, ${state}` : city || state,
+      pincode,
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  };
 
   const filteredProviders = tiffinProviders.filter(provider =>
     provider.name.toLowerCase().includes(searchText.toLowerCase()),
@@ -320,9 +344,6 @@ const HomeScreen = ({ navigation }) => {
     setGlobalLikedItems(newLiked);
   };
 
-  
-  
-
   const renderProvider = ({ item }) => (
     <TouchableOpacity
       style={styles.kitchenCard}
@@ -341,7 +362,6 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.heartIcon}
           onPress={() => toggleLike(item.id)}
-
         >
           <Icon
             name={liked[item.id] ? 'heart' : 'heart-outline'}
@@ -372,10 +392,9 @@ const HomeScreen = ({ navigation }) => {
       const granted = await requestLocationPermission();
       console.log('Location permission:', granted);
     };
-  
+
     askPermission();
   }, []);
- 
 
   return (
     <View style={styles.container}>
@@ -388,6 +407,7 @@ const HomeScreen = ({ navigation }) => {
       {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
+          {/* Left Section */}
           <TouchableOpacity
             style={styles.locationSection}
             activeOpacity={0.7}
@@ -398,10 +418,30 @@ const HomeScreen = ({ navigation }) => {
             </View>
 
             <View>
-              <Text style={styles.title}>Home</Text>
-              <Text style={styles.locationText}>
-                {states?.data?.[0]?.stateName || 'Baner, Pune'}
+              {/* <Text style={styles.title}>Home</Text> */}
+              <Text style={styles.title}>
+                {selectedAddress?.type || 'Location'}
               </Text>
+
+              {/* <Text style={styles.locationText}>
+                {states?.data?.[0]?.stateName || 'Baner, Pune'}
+              </Text> */}
+
+              <Text style={styles.locationText} numberOfLines={1}>
+                {getFullAddress(selectedAddress)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {/* Right Srction */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('NotificationScreen')}
+          >
+            <View style={styles.notificationWrapper}>
+              <Icon
+                name="notifications-outline"
+                size={22}
+                color={colors.primary}
+              />
             </View>
           </TouchableOpacity>
         </View>
@@ -485,6 +525,7 @@ const styles = StyleSheet.create({
 
   headerTop: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
   },
@@ -492,6 +533,7 @@ const styles = StyleSheet.create({
   locationSection: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
 
   locationIconContainer: {
@@ -510,6 +552,17 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: fonts.size.sm,
     color: colors.textSecondary,
+    maxWidth: 220,
+    lineHeight: 18,
+  },
+
+  notificationWrapper: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.successLight,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   searchContainer: {

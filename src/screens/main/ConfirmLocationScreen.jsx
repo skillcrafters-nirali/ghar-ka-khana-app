@@ -64,13 +64,16 @@ const ConfirmLocationScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (editAddress) {
-      setReceiverName(editAddress.name);
-      setLandmark(editAddress.address);
-      setSelectedAddressType(editAddress.type);
-      setPincode(editAddress.pincode); 
-             
+      setReceiverName(editAddress.name || '');
+      setPhoneNumber(editAddress.phoneNumber || '');
+      setLandmark(editAddress.address || '');
+      setPincode(editAddress.pincode || '');
+      setSelectedAddressType(editAddress.type || 'Home');
+      setSelectedStateId(editAddress.stateId || '');
+      setSelectedCityId(editAddress.cityId || '');
     }
   }, [editAddress]);
+  
 
   
   

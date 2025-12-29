@@ -16,7 +16,8 @@ import MenuSubscriptionScreen from '../screens/main/MenuSubscriptionScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 import FavoriteAllScreen from '../screens/main/FavoriteAllScreen';
 import CategoryScreen from '../screens/main/CategoryScreen';
-
+import EditProfile from '../screens/main/EditProfile';
+import SavedAddress from '../screens/main/SavedAddress';
 // Order Screens
 import LiveTrackingScreen from '../screens/orders/LiveTrackingScreen';
 import TrackPlanScreen from '../screens/orders/TrackPlanScreen';
@@ -51,6 +52,8 @@ const AppNavigator = () => {
       <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
       <Stack.Screen name="MenuSubscription" component={MenuSubscriptionScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="SavedAddress"component={SavedAddress}/>
       
       {/* Order Stack */}
       <Stack.Screen name="Plan" component={TrackPlanScreen} />
