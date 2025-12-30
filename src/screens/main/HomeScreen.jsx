@@ -276,25 +276,25 @@ const filters = [
     id: 1,
     title: 'Gujarati Dish',
     image:
-      'https://b.zmtcdn.com/data/o2_assets/52eb9796bb9bcf0eba64c643349e97211634401116.png',
+      'https://i.pinimg.com/736x/0d/7a/cc/0d7acc1107cdfbf6eac99ea21439677b.jpg',
   },
   {
     id: 2,
     title: 'Punjabi Dish',
     image:
-      'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_112,h_112,c_fill/Autosuggest/Top%20200%20queries/Punjabi%20Thali.png',
+      'https://i.pinimg.com/736x/ec/0b/02/ec0b0210349d66863283c2b4a4a35604.jpg',
   },
   {
     id: 3,
     title: 'Kathiyavadi Dish',
     image:
-      'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_112,h_112,c_fill/FOOD_CATALOG/IMAGES/CMS/2025/7/16/08ff9b9d-afd2-43c9-8668-1638933caee2_a70ca9f7-adcb-46d8-a4c1-d831a989d493.jpg',
+      'https://i.pinimg.com/1200x/1d/54/61/1d54611913f3fcef1431758df428c2f5.jpg',
   },
   {
     id: 4,
     title: 'Rajasthani Dish',
     image:
-      'https://b.zmtcdn.com/data/dish_photos/926/7e44c87ebc4384af773cb354e56eb926.jpg',
+      'https://i.pinimg.com/1200x/71/f3/4d/71f34dc09917ebbab207edd680f17539.jpg',
   },
 ];
 

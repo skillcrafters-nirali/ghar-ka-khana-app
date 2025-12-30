@@ -12,7 +12,6 @@ import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import { logout } from '../../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../components/common/Button';
 
 const ProfileScreen = ({ navigation }) => {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -26,24 +25,34 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const profileMenuItems = [
-    { icon: 'person-outline', title: 'Your Profile',
-     onPress:() => navigation.navigate('EditProfile'),
-  },
+    {
+      icon: 'person-outline',
+      title: 'Your Profile',
+      onPress: () => navigation.navigate('EditProfile'),
+    },
     {
       icon: 'receipt-outline',
       title: 'Your Orders',
       onPress: () => navigation.navigate('OrderHistory'),
     },
-    { icon: 'book-outline', title: 'Saved Address',
-    onPress: () => navigation.navigate('SavedAddress'), 
-},
+    {
+      icon: 'book-outline',
+      title: 'Saved Address',
+      onPress: () => navigation.navigate('SavedAddress'),
+    },
   ];
 
   const moreMenuItems = [
-    { icon: 'help-circle-outline', title: 'Online Help Portal' },
-    { icon: 'information-circle-outline', title: 'About' },
-    { icon: 'chatbubble-outline', title: 'Send Feedback' },
-    
+    {
+      icon: 'help-circle-outline',
+      title: 'Help & Support',
+      onPress: () => navigation.navigate('Help'),
+    },
+    {
+      icon: 'chatbubble-outline',
+      title: 'Send Feedback',
+      onPress: () => navigation.navigate('Feedback'),
+    },
   ];
 
   return (
@@ -69,16 +78,18 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.avatar}>
               <Icon name="person" size={32} color={colors.primary} />
             </View>
-            <Text style={styles.userName}>{user?.name || 'Donji Sharma'}</Text>
-          </View>
-          <View style={styles.subscriptionButtonWrapper}>
-            <Button
-              title="Renew Your Dabba Plan"
-              variant="primary"
-              size="medium"
-              style={styles.subscriptionButton}
-              onPress={() => {}}
-            />
+
+            <View style={styles.userTextContainer}>
+              <Text style={styles.userName}>
+                {user?.name ? user.name : 'Donji Sharma'}
+              </Text>
+
+              {/* {user?.name && <Text style={styles.userName}>{user.name}</Text>} */}
+
+              {user?.phone ? (
+                <Text style={styles.userPhone}>{user.phone}</Text>
+              ) : null}
+            </View>
           </View>
         </View>
         {/* Profile Menu Items */}
@@ -164,6 +175,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 100,
   },
+  userTextContainer: {
+    flexDirection: 'column',
+  },
+
   userCard: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -193,15 +208,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.family.medium,
     color: colors.textPrimary,
   },
-  subscriptionButtonWrapper: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  
-  subscriptionButton: {
-    backgroundColor: colors.primary,
-    
-    
+  userPhone: {
+    fontSize: fonts.size.sm,
+    fontFamily: fonts.family.regular,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   menuSection: {
     backgroundColor: colors.surface,
@@ -215,18 +226,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  // moreContainer: {
-  //   borderRadius: 14,
-  //   marginBottom: 12,
-  //   borderWidth: 1,
-  //   borderColor: colors.border,
-  // },
 
   moreContainer: {
     backgroundColor: colors.surface,
     marginBottom: 4,
   },
-  
 
   moreHeader: {
     flexDirection: 'row',
@@ -238,10 +242,6 @@ const styles = StyleSheet.create({
 
   moreDropdown: {
     backgroundColor: colors.surface,
-    // borderTopWidth: 1,
-    // borderTopColor: colors.border,
-    // borderBottomLeftRadius: 14,
-    // borderBottomRightRadius: 14,
   },
 
   moreTitle: {
