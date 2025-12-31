@@ -15,7 +15,7 @@ const offers = [
     title: '100% Off',
     subtitle: 'Enjoy your first trial meal for free',
     code: 'NEW99',
-    image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe',
+    image: 'https://i.pinimg.com/1200x/bd/d0/32/bdd032169a56d4c5a16fbc1379f8817f.jpg',
     bgColor: colors.successLight,
   },
   {
@@ -23,7 +23,7 @@ const offers = [
     title: 'Flat ₹50 Off',
     subtitle: 'On orders above ₹299',
     code: 'SAVE50',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38',
+    image: 'https://i.pinimg.com/1200x/2a/8e/57/2a8e57bc82908377e58203bfd9f95e84.jpg',
     bgColor: colors.tertiary,
   },
   {
@@ -31,7 +31,7 @@ const offers = [
     title: 'Free Delivery',
     subtitle: 'For premium subscribers',
     code: 'FREEDEL',
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+    image: 'https://i.pinimg.com/736x/30/bb/ae/30bbaeb0d325c0b34a81697c4f80fded.jpg',
     bgColor: colors.successLight,
   },
 ];
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 100,
-    height: 80,
+    height: 100,
     borderRadius: 12,
     marginLeft: 10,
   },
