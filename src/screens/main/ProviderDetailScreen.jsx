@@ -10,6 +10,7 @@ import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import ProviderHeader from '../../components/common/ProviderHeader';
 import Button from '../../components/common/Button';
+import Reviews from '../main/Reviews';
 
 /* ---------------- CONSTANTS ---------------- */
 
@@ -325,6 +326,8 @@ const ProviderDetailScreen = ({ route, navigation }) => {
         {renderMeal('Dinner', 'dinner')}
         {renderComboList()}
 
+        <Reviews navigation={navigation} />
+
         <View style={{ marginHorizontal: 16, marginBottom: 30 }}>
           <Button
             title="Place Order"
@@ -347,6 +350,7 @@ const ProviderDetailScreen = ({ route, navigation }) => {
             }}
           />
         </View>
+        
       </ScrollView>
     </View>
   );

@@ -19,6 +19,7 @@ import SavedAddress from '../screens/Profile/SavedAddress';
 import Feedback from '../screens/Profile/Feedback';
 import Help from '../screens/Profile/Help';
 import HelpDetail from '../screens/Profile/HelpDetail';
+import AllReviewsScreen from '../screens/main/AllReviewsScreen';
 
 // Order Screens
 import LiveTrackingScreen from '../screens/orders/LiveTrackingScreen';
@@ -26,7 +27,6 @@ import OrderManagementScreen from '../screens/orders/OrderManagementScreen';
 import PaymentScreen from '../screens/orders/PaymentScreen';
 import OrderConfirmationScreen from '../screens/orders/OrderConfirmationScreen';
 import OrderHistoryScreen from '../screens/Profile/OrderHistoryScreen';
-import RatingsReviewsScreen from '../screens/orders/RatingsReviewsScreen';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +51,7 @@ const AppNavigator = () => {
       <Stack.Screen name="ProviderDetail" component={ProviderDetailScreen} />
       <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
       <Stack.Screen name="MenuSubscription" component={MenuSubscriptionScreen} />
+      <Stack.Screen name="AllReviews" component={AllReviewsScreen} />
 
       {/* Profile Stack */}
       <Stack.Screen name="EditProfile" component={EditProfile} />
@@ -65,7 +66,6 @@ const AppNavigator = () => {
       <Stack.Screen name="OrderManagement" component={OrderManagementScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
-      <Stack.Screen name="RatingsReviews" component={RatingsReviewsScreen} />
     </Stack.Navigator>
   );
 };

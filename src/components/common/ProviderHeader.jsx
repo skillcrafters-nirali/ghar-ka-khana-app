@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import IconBtn from 'react-native-vector-icons/SimpleLineIcons';
 import { colors } from '../../styles/colors';
 import { fonts } from '../../styles/fonts';
 import Button from './Button';
@@ -36,9 +37,9 @@ const ProviderHeader = ({
             <Icon name="heart-outline" size={24} color={colors.surface} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <Icon
-              name="share-social-outline"
-              size={24}
+            <IconBtn
+              name="share-alt"
+              size={22}
               color={colors.surface}
             />
           </TouchableOpacity>
